@@ -3,7 +3,7 @@
 TOKEN="{{ digital_ocean_token }} "
 DOMAIN="{{ digital_ocean_root_domain }}"
 RECORD_ID="{{ digital_ocean_record_id }}"
-LOG_FILE="{{ dynamic_dns_dir/public_ip.txt }}"
+LOG_FILE="{{ dynamic_dns_dir }}/public_ip.txt"
 
 CURRENT_IPV4="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 LAST_IPV4="$(tail -1 $LOG_FILE | awk -F, '{print $2}')"
