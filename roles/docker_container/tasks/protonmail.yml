@@ -36,9 +36,4 @@
     networks:
       - name: backend
     networks_cli_compatible: true
-    healthcheck:
-      test: ["CMD-SHELL", "netstat -tnlp | grep :1025 || exit 1"]
-      interval: 20s
-      timeout: 10s
-      retries: 5
     state: "{{ state | default('started') }}"
