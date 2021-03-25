@@ -8,7 +8,6 @@
     group: "root"
     mode: "0700"
     state: directory
-  when: configure_do_dynamic_dns|bool
 
 - name: create dynamic_dns update script
   template:
@@ -18,11 +17,9 @@
     group: "root"
     mode: "0750"
     force: false
-  when: configure_do_dynamic_dns|bool
 
 - name: cron dynamic_dns update
   cron:
     name: "Check dynamic dns"
     minute: "*/5"
     job: "/usr/local/bin/dynamic_dns_check.sh > /var/log/dynamic_dns_check.log 2>&1"
-  when: configure_do_dynamic_dns|bool
