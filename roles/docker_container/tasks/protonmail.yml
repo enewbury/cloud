@@ -5,7 +5,7 @@
 #   register: protonmail_status
 
 - name: "Build protonmail login image"
-  shell: "docker build -t protonmail-login ."
+  shell: "docker build -t protonmail-login ./roles/docker_container/files"
   # when: protonmail_status.rc == 1
 
 - name: "Login to protonmail bridge"
