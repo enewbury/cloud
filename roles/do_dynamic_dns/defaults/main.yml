@@ -1,0 +1,4 @@
+---
+# defaults file for restic backup
+configure_do_dynamic_dns: false
+dynamic_dns_dir: "/var/dynamic_dns"
