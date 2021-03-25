@@ -31,6 +31,11 @@
       when:
         - nextcloud_configure_protonmail|bool
 
+    - name: set nextcloud protonmail password config.php value
+      shell: "{{ docker_occ_cmd }} config:system:set mail_smtppassword --value='{{ local_smtp_password.ansible_facts.docker_container.Output }}'"
+      when:
+        - nextcloud_configure_protonmail|bool
+
     - name: install {{ item.name }} app
       shell: "{{ docker_occ_cmd }} app:install {{ item.name }}"
       args:

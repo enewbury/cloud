@@ -72,7 +72,6 @@ nextcloud_protonmail_config:
   - "mail_smtphost     --value=localhost"
   - "mail_smtpport     --value=1025"
   - "mail_smtpname     --value={{ protonmail_username }}"
-  - "mail_smtppassword --value={{ local_smtp_password.ansible_facts.docker_container.Output }}"
 
 nextcloud_app_config:
   - name: survey_client
