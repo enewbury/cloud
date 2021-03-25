@@ -14,14 +14,14 @@ Onlyoffice and Collabora work only on a x86_64 server because there are no ARM(6
 
 Install [Ansible](https://www.ansible.com/) and some needed tools by running the following command with a user that can sudo or is root. 
 ```bash
-curl -s https://raw.githubusercontent.com/reinernippes/nextcloud_on_docker/master/prepare_system.sh | /bin/bash
+curl -s https://raw.githubusercontent.com/enewbury/nextcloud_setup/master/prepare_system.sh | /bin/bash
 ```
 
 Clone this repo and change into the directory nextcloud_on_docker.
 ```bash
-git clone https://github.com/reinernippes/nextcloud_on_docker
+git clone https://github.com/enewbury/nextcloud_setup
 
-cd nextcloud_on_docker
+cd nextcloud_setup
 ```
 
 Note that root must have also sudo right otherwise the script will complain. Some hoster use distros where root is not in the sudoers file. In this case you have to add `root ALL=(ALL) NOPASSWD:ALL` to /etc/sudoers.
@@ -97,6 +97,24 @@ nextcloud_mail_smtpport     = 587
 nextcloud_mail_smtpname     =
 nextcloud_mail_smtppwd      =
 ```
+
+You can also configure a protonmail bridge to run a local smtp server that connects to Protonmail's secure apis.
+```ini
+# Setup the Nextcloud protonmail server.
+nextcloud_configure_protonmail    = false
+protonmail_username         =
+protonmail_password         =
+nextcloud_mail_from         =
+nextcloud_mail_smtpmode     = smtp
+nextcloud_mail_smtpauthtype = LOGIN
+nextcloud_mail_domain       = localhost
+nextcloud_mail_smtpname     =
+nextcloud_mail_smtpsecure   = tls
+nextcloud_mail_smtpauth     = 1
+nextcloud_mail_smtphost     =
+nextcloud_mail_smtpport     = 1025
+```
+
 
 Setup S3 Buckets as [primary storage](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html)
 
