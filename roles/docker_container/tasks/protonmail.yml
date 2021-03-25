@@ -30,7 +30,7 @@
   docker_container:
     name: protonmail
     image: protonmail:latest
-    command: proton-bridge --noninteractive
+    command: hydroxide smtp
     restart_policy: always
     tty: yes
     networks:
