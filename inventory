@@ -85,7 +85,7 @@ portainer_enabled           = false
 portainer_passwd            = ''              # If empty the playbook will generate a random password.
 
 # Set up dynamic DNS
-configure_dynamic_dns       = false
+configure_do_dynamic_dns       = false
 digital_ocean_token         =
 digital_ocean_root_domain   =
 digital_ocean_record_id     =
