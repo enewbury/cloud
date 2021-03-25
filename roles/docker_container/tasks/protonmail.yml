@@ -31,6 +31,7 @@
   docker_container:
     name: protonmail
     image: protonmail:latest
+    command: proton-bridge --noninteractive
     restart_policy: always
     tty: yes
     networks:
