@@ -1,11 +1,11 @@
 ---
 # tasks file to start protonmail container
 - name: "Check status of protonmail"
-  command: docker ps | grep -w protonmail
+  shell: docker ps | grep -w protonmail
   register: protonmail_status
 
 - name: "Build protonmail login image"
-  command: "docker build -t protonmail-login ."
+  shell: "docker build -t protonmail-login ."
   when: protonmail_status.rc == 1
 
 - name: "Login to protonmail bridge"
@@ -18,7 +18,7 @@
   when: protonmail_status.rc == 1
 
 - name: "Create logged in image"
-  command: "docker commit protonmail-login protonmail"
+  shell: "docker commit protonmail-login protonmail"
   when: protonmail_status.rc == 1
 
 - name: "Remove protonmail login container"
