@@ -1,0 +1,44 @@
+---
+# tasks file to start protonmail container
+- name: "Check status of protonmail"
+  command: docker ps | grep -w protonmail
+  register: protonmail_status
+
+- name: "Build protonmail login image"
+  command: "docker build -t protonmail-login ."
+  when: protonmail_status.rc == 1
+
+- name: "Login to protonmail bridge"
+  docker_container:
+    name: protonmail-login
+    image: protonmail-login:latest
+    command: /root/login.sh {{ protonmail_username }} {{ protonmail_password }}
+    detach: no
+  register: local_smtp_password
+  when: protonmail_status.rc == 1
+
+- name: "Create logged in image"
+  command: "docker commit protonmail-login protonmail"
+  when: protonmail_status.rc == 1
+
+- name: "Remove protonmail login container"
+  docker_container:
+    state: absent
+    name: protonmail-login
+  when: protonmail_status.rc == 1
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} protonmail container"
+  docker_container:
+    name: protonmail
+    image: protonmail:latest
+    restart_policy: always
+    tty: yes
+    networks:
+      - name: backend
+    networks_cli_compatible: true
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -tnlp | grep :1025 || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    state: "{{ state | default('started') }}"

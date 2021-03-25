@@ -1,7 +1,7 @@
 ---
 # defaults file for prep_nextcloud
 
-nextccloud_system_config:
+nextcloud_system_config:
   - "overwrite.cli.url --value=https://{{ nextcloud_server_fqdn }}"
   - "trusted_domains 0 --value={{ nextcloud_server_fqdn }}"
   - "trusted_domains 1 --value=nginx"
@@ -49,7 +49,7 @@ nextccloud_system_config:
   - "maintenance --value=false --type=boolean"
   - "theme --value=''"
 
-nextccloud_mail_config:
+nextcloud_mail_config:
   - "mail_from_address --value={{ nextcloud_mail_from }}"
   - "mail_smtpmode     --value={{ nextcloud_mail_smtpmode }}"
   - "mail_smtpauthtype --value={{ nextcloud_mail_smtpauthtype }}"
@@ -61,6 +61,19 @@ nextccloud_mail_config:
   - "mail_smtpport     --value={{ nextcloud_mail_smtpport }}"
   - "mail_smtpname     --value={{ nextcloud_mail_smtpname }}"
   - "mail_smtppassword --value={{ nextcloud_mail_smtppwd }}"
+
+nextcloud_protonmail_config:
+  - "mail_from_address --value={{ nextcloud_mail_from }}"
+  - "mail_smtpmode     --value={{ nextcloud_mail_smtpmode }}"
+  - "mail_smtpauthtype --value={{ nextcloud_mail_smtpauthtype }}"
+  - "mail_domain       --value={{ nextcloud_mail_domain }}"
+  - "mail_smtpname     --value={{ nextcloud_mail_smtpname }}"
+  - "mail_smtpsecure   --value={{ nextcloud_mail_smtpsecure }}"
+  - "mail_smtpauth     --value={{ nextcloud_mail_smtpauth }}"
+  - "mail_smtphost     --value=localhost"
+  - "mail_smtpport     --value=1025"
+  - "mail_smtpname     --value={{ protonmail_username }}"
+  - "mail_smtppassword --value={{ local_smtp_password.ansible_facts.docker_container.Output }}"
 
 nextcloud_app_config:
   - name: survey_client

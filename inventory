@@ -33,6 +33,9 @@ nextcloud_db_passwd         = ''              # If empty the playbook will gener
 ### Optional variables ###
 
 # Setup the Nextcloud mail server.
+nextcloud_configure_protonmail = false
+protonmail_username         =
+protonmail_password         =
 nextcloud_configure_mail    = false
 nextcloud_mail_from         = 
 nextcloud_mail_smtpmode     = smtp
