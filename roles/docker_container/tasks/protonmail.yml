@@ -1,12 +1,12 @@
 ---
 # tasks file to start protonmail container
-- name: "Check status of protonmail"
-  shell: docker ps | grep -w protonmail
-  register: protonmail_status
+# - name: "Check status of protonmail"
+#   shell: docker ps | grep -w protonmail
+#   register: protonmail_status
 
 - name: "Build protonmail login image"
   shell: "docker build -t protonmail-login ."
-  when: protonmail_status.rc == 1
+  # when: protonmail_status.rc == 1
 
 - name: "Login to protonmail bridge"
   docker_container:
@@ -15,17 +15,17 @@
     command: /root/login.sh {{ protonmail_username }} {{ protonmail_password }}
     detach: no
   register: local_smtp_password
-  when: protonmail_status.rc == 1
+  # when: protonmail_status.rc == 1
 
 - name: "Create logged in image"
   shell: "docker commit protonmail-login protonmail"
-  when: protonmail_status.rc == 1
+  # when: protonmail_status.rc == 1
 
 - name: "Remove protonmail login container"
   docker_container:
     state: absent
     name: protonmail-login
-  when: protonmail_status.rc == 1
+  # when: protonmail_status.rc == 1
 
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} protonmail container"
   docker_container:
