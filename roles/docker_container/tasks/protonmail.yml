@@ -33,6 +33,7 @@
     command: hydroxide -smtp-host protonmail smtp
     restart_policy: always
     tty: yes
-    ports: "1025:1025"
+    networks:
+      - name: backend
     networks_cli_compatible: true
     state: "{{ state | default('started') }}"
