@@ -30,7 +30,7 @@
   docker_container:
     name: protonmail
     image: protonmail:latest
-    command: hydroxide smtp
+    command: hydroxide -smtp-host protonmail smtp
     restart_policy: always
     tty: yes
     ports: "1025:1025"
