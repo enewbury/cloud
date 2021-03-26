@@ -33,7 +33,6 @@
     command: hydroxide smtp
     restart_policy: always
     tty: yes
-    networks:
-      - name: backend
+    ports: 1025
     networks_cli_compatible: true
     state: "{{ state | default('started') }}"
