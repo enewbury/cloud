@@ -21,7 +21,7 @@
   copy:
     content: "{{ local_smtp_password.container.Output }}"
     dest: "{{ nextcloud_credential_store }}/protonmail_local_password"
-  when protonmail_sync.changed
+  when: protonmail_sync.changed
 
 - name: "Create logged in image"
   shell: "docker commit protonmail-login protonmail"
