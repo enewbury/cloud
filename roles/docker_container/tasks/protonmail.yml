@@ -17,6 +17,9 @@
   register: local_smtp_password
   when: protonmail_sync.changed
 
+- name: "Save protonmail password"
+  local_action: copy content='{{ local_smtp_password.container.Output }}''  dest='{{ nextcloud_credential_store }}/protonmail_local_password'
+
 - name: "Create logged in image"
   shell: "docker commit protonmail-login protonmail"
   when: protonmail_sync.changed
@@ -25,6 +28,10 @@
   docker_container:
     state: absent
     name: protonmail-login
+
+- name: "Set protonmail password fact"
+  set_fact:
+    protonmail_local_password: "{{ lookup('file', '{{ nextcloud_credential_store }}/protonmail_local_password') }}"
 
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} protonmail container"
   docker_container:
