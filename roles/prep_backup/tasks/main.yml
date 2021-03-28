@@ -7,7 +7,7 @@
 
 - name: install restic
   include_tasks: install_restic.yml
-  when: "{{ restic_binary.stat.exists }} "
+  when: restic_binary.stat.exists
 
 - name: install rclone
   include_tasks: install_rclone.yml
