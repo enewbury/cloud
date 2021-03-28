@@ -1,0 +1,11 @@
+log-file=stdout
+listening-port=3478
+no-cli
+fingerprint
+use-auth-secret
+static-auth-secret={{ lookup('password', '{{ nextcloud_credential_store }}/talk_secret chars=ascii_letters,digits length=32') | lower }}
+realm={{ nextcloud_server_fqdn }}
+total-quota=100
+bps-capacity=0
+stale-nonce
+no-multicast-peers

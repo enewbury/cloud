@@ -1,28 +1,24 @@
 ---
 # tasks file to start turnserver container
 
+- name: copy turnserver.conf
+  template:
+    src: "turnserver.conf.j2"
+    dest: "{{ nextcloud_config_dir }}/turnserver.conf"
+    owner: "root"
+    group: "root"
+    mode: 0644
+
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the turnserver container"
   docker_container:
-    name:           'turn_server'
-    image:          "{{ 'serverror' if ansible_architecture == 'aarch64' else 'instrumentisto' }}/coturn:{{ docker_turnserver_image | default('latest') }}"
-    restart_policy: 'unless-stopped'
-    command: >
-      -n
-      --log-file=stdout
-      --external-ip=$(detect-external-ip)
-      --listening-port=3478
-      --no-cli
-      --fingerprint
-      --use-auth-secret
-      --static-auth-secret={{ lookup('password', '{{ nextcloud_credential_store }}/talk_secret chars=ascii_letters,digits length=32') | lower }}
-      --realm={{ nextcloud_server_fqdn }}
-      --total-quota=100
-      --bps-capacity=0
-      --stale-nonce
-      --no-multicast-peers
+    name: "turn_server"
+    image: "{{ 'serverror' if ansible_architecture == 'aarch64' else 'instrumentisto' }}/coturn:{{ docker_turnserver_image | default('latest') }}"
+    restart_policy: "unless-stopped"
+    command: --external-ip=$(detect-external-ip)
     volumes:
-      - 'turnserver-data-vol:/var/lib/coturn:rw'
+      - "turnserver-data-vol:/var/lib/coturn:rw"
+      - "{{nextcloud_config_dir }}/turnserver.conf:/etc/coturn/turnserver.conf"
     ports:
       - 0.0.0.0:3478:3478/udp
       - 0.0.0.0:3478:3478/tcp
-    state:          '{{ state | default("started") }}'
+    state: '{{ state | default("started") }}'
