@@ -11,7 +11,7 @@
 
 - name: install rclone
   include_tasks: install_rclone.yml
-  when: ( 'rclone' in restic_repo ) and ( rclone_binary.stat.exists )
+  when: ( 'rclone' in restic_repo )
 
 - name: generate restic secret if restic_backup_secret is empty
   set_fact:
