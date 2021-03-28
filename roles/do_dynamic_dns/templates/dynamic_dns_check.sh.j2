@@ -19,7 +19,7 @@ else
         docker rm turn_server
         docker run \
             -d --name turn_server \
-            --restart 'unless-stopped'
+            --restart 'unless-stopped' \
             -v turnserver-data-vol:/var/lib/coturn:rw \
             -v {{nextcloud_config_dir }}/turnserver.conf:/etc/coturn/turnserver.conf \
             -p 0.0.0.0:3478:3478/udp \
