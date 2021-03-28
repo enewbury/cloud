@@ -10,25 +10,27 @@
 
 - name: ensures acme.json file exists
   file:
-    path:  "{{ traefik_config_dir }}/acme.json"
+    path: "{{ traefik_config_dir }}/acme.json"
     state: touch
     owner: root
     group: root
-    mode:  0600
+    mode: 0600
+  register: acme_file
+  changed_when: "acme_file.diff.before.atime == acme_file.diff.before.mtime"
 
 - name: adding traefik.yaml file
   template:
-    src:     traefik.yaml.j2
-    dest:    "{{ traefik_config_dir }}/traefik.yaml"
-    owner:   root
-    group:   root
+    src: traefik.yaml.j2
+    dest: "{{ traefik_config_dir }}/traefik.yaml"
+    owner: root
+    group: root
 
 - name: adding dynamic.yaml file
   template:
-    src:     dynamic.yaml.j2
-    dest:    "{{ traefik_config_dir }}/dynamic.yaml"
-    owner:   root
-    group:   root
+    src: dynamic.yaml.j2
+    dest: "{{ traefik_config_dir }}/dynamic.yaml"
+    owner: root
+    group: root
 
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the traefik container"
   docker_container:
