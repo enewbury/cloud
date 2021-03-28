@@ -1,12 +1,17 @@
 ---
 # tasks file for prep_backup
+- name: "Check if restic installed"
+  stat:
+    path: "{{ restic_install_path}}/restic"
+  register: restic_binary
 
 - name: install restic
   include_tasks: install_restic.yml
+  when: "{{ restic_binary.stat.exists }} "
 
 - name: install rclone
   include_tasks: install_rclone.yml
-  when: ( 'rclone' in restic_repo )
+  when: ( 'rclone' in restic_repo ) and ( rclone_binary.stat.exists )
 
 - name: generate restic secret if restic_backup_secret is empty
   set_fact:

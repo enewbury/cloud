@@ -14,17 +14,17 @@
 
 - name: download restic binary
   get_url:
-    url: '{{ restic_download_url }}'
-    dest: '{{ restic_install_path }}/restic.bz2'
+    url: "{{ restic_download_url }}"
+    dest: "{{ restic_install_path }}/restic.bz2"
     force: true
-    checksum: 'sha256:https://github.com/restic/restic/releases/download/v{{ restic_version }}/SHA256SUMS'
+    checksum: "sha256:https://github.com/restic/restic/releases/download/v{{ restic_version }}/SHA256SUMS"
 
 - name: decompress the binary
   shell: "bunzip2 --force {{ restic_install_path }}/restic.bz2"
 
 - name: ensure permissions are correct
   file:
-    path: '{{ restic_install_path }}/restic'
-    mode: '0755'
-    owner: 'root'
-    group: 'root'
+    path: "{{ restic_install_path }}/restic"
+    mode: "0755"
+    owner: "root"
+    group: "root"
