@@ -2,8 +2,8 @@
 # tasks file to start turnserver container
 
 - name: get public IP
-    ipify_facts:
-    register: public_ip
+  ipify_facts:
+  register: public_ip
 
 - name: copy turnserver.conf
   template:
