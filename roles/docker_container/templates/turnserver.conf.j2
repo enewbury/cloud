@@ -2,7 +2,7 @@ log-file=stdout
 listening-port=3478
 no-cli
 fingerprint
-external-ip={{ public_ip }}
+external-ip={{ public_ip.ansible_facts.ipify_public_ip }}
 use-auth-secret
 static-auth-secret={{ lookup('password', '{{ nextcloud_credential_store }}/talk_secret chars=ascii_letters,digits length=32') | lower }}
 realm={{ nextcloud_server_fqdn }}
