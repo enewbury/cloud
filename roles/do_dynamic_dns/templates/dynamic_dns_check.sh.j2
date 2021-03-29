@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TOKEN="{{ digital_ocean_token }} "
+TOKEN="{{ digital_ocean_token }}"
 DOMAIN="{{ digital_ocean_root_domain }}"
 RECORD_ID="{{ digital_ocean_record_id }}"
 LOG_FILE="{{ dynamic_dns_dir }}/public_ip.txt"
@@ -15,15 +15,7 @@ else
     echo "$(date),$CURRENT_IPV4" >> "$LOG_FILE"
     curl -X PUT -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"data":"'"$CURRENT_IPV4"'"}' "https://api.digitalocean.com/v2/domains/$DOMAIN/records/$RECORD_ID"
     {% if talk_install|bool %}
-        docker stop turn_server
-        docker rm turn_server
-        docker run \
-            -d --name turn_server \
-            --restart 'unless-stopped' \
-            -v turnserver-data-vol:/var/lib/coturn:rw \
-            -v {{nextcloud_config_dir }}/turnserver.conf:/etc/coturn/turnserver.conf \
-            -p 0.0.0.0:3478:3478/udp \
-            -p 0.0.0.0:3478:3478/tcp \
-            instrumentisto/coturn:{{ docker_turnserver_image | default('latest') }} --external-ip="$CURRENT_IPV4"
+       sed -i "s/\(^external_ip=\).*/\1$CURRENT_IPV$/" {{ nextcloud_config_dir }}/turnserver.conf
+       docker restart turn_server
     {% endif %}
 fi
