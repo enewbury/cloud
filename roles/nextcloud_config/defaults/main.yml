@@ -67,7 +67,7 @@ nextcloud_protonmail_config:
   - "mail_domain       --value={{ nextcloud_mail_domain }}"
   - "mail_smtpmode     --value=smtp"
   - "mail_smtpsecure   --value="
-  - "mail_smtpauthtype --value=LOGIN"
+  - "mail_smtpauthtype --value=PLAIN"
   - "mail_smtpauth     --value=1"
   - "mail_smtphost     --value=protonmail"
   - "mail_smtpport     --value=1025"
