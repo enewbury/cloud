@@ -1,11 +1,11 @@
 ---
 # defaults file for restic backup
 
-# checkout the latest version of restic. set to x.y.z to get a specific version 
-restic_version:    'latest'
+# checkout the latest version of restic. set to x.y.z to get a specific version
+restic_version: "latest"
 
-restic_backup_secret:       '' 
-restic_install_path:        '/usr/local/bin'
+restic_backup_secret: ""
+restic_install_path: "/usr/local/bin"
 
 # use a local directory as a restic repository (not a good idea anyway)
 # restic_repo:          '/var/backups/selfosted'
@@ -25,6 +25,6 @@ restic_install_path:        '/usr/local/bin'
 #      storage_class = STANDARD_IA
 
 # crontab setings for the backup script - default daily at 3pm
-restic_backup_day:    '*'
-restic_backup_minute: '0'
-restic_backup_hour:   '3'
+restic_backup_day: "*"
+restic_backup_minute: "0"
+restic_backup_hour: "7"
