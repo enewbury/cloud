@@ -3,7 +3,7 @@
 
 local_credential_store: "./secrets"
 nextcloud_data_dir: "{{ cloud_base_dir }}/nextcloud/data"
-nextcloud_www_dir: "{{ cloud_base_dir }}/nextcloud//www"
+nextcloud_www_dir: "{{ cloud_base_dir }}/nextcloud/www"
 nextcloud_config_dir: "{{ cloud_base_dir }}/nextcloud/config"
 cloud_database_dump_dir: "{{ cloud_base_dir }}/database-dump"
 cloud_nginx_dir: "{{ cloud_base_dir }}/nginx"

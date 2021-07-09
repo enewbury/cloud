@@ -1,16 +1,9 @@
 ---
 
-- name: ensures element dir exists
-  file:
-    path: "{{ cloud_base_dir }}/element"
-    state: directory
-    owner: root
-    group: root
-
 - name: adding element-config.json file
   template:
     src: element-config.json.j2
-    dest: "{{ cloud_server_dir }}/element/element-config.json"
+    dest: "{{ cloud_base_dir }}/element/element-config.json"
     owner: root
     group: root
 
@@ -31,6 +24,6 @@
       com.centurylinklabs.watchtower.enable: "true"
 
     volumes:
-      - "{{ clouse_base_dir }}/element/element-config.json:/app/config.json"
+      - "{{ cloud_base_dir }}/element/element-config.json:/app/config.json"
     state: "{{ state | default('started') }}"
 

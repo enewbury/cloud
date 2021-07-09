@@ -9,7 +9,8 @@ ufw_rules:
   - { port: 443, rule: allow }
   - { port: 3478, rule: allow }
   - { port: 5349, rule: allow }
-  - { port: 64000:65535, rule: allow }
+  - { port: 64000:65535, rule: allow, proto: udp }
+  - { port: 64000:65535, rule: allow, proto: tcp }
 
 #ufw_applications:
 #  - { name: OpenSSH, rule: allow, from_ip: any }

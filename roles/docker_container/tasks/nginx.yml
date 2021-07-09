@@ -1,13 +1,6 @@
 ---
 # tasks file to start nginx container
 
-- name: ensures nginx dir exists
-  file:
-    path: "{{ cloud_base_dir }}/nginx"
-    state: directory
-    owner: root
-    group: root
-
 - name: copy uploadsize.conf to {{ nextcloud_config_dir }}
   copy:
     src:  'uploadsize.conf'

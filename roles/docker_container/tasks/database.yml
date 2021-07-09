@@ -16,7 +16,7 @@
 
 - name: 'create data volume'
   docker_volume:
-    name: 'nextcloud-database-vol'
+    name: 'cloud-database-vol'
     state: present
 
 - name: mysql container
@@ -34,7 +34,7 @@
             MYSQL_PASSWORD:      "{{ nextcloud_db_passwd }}"
             MYSQL_ROOT_PASSWORD: "{{ lookup('password', '{{ local_credential_store }}/mysql_root_secret chars=ascii_letters,digits length=32') }}"
         volumes: 
-          - 'nextcloud-database-vol:/var/lib/mysql'
+          - 'cloud-database-vol:/var/lib/mysql'
         networks:
           - name: backend
         networks_cli_compatible: true
@@ -46,7 +46,7 @@
           interval: 10s
           timeout: 5s
           retries: 5
-  when: nextcloud_db_type == 'mysql'
+  when: cloud_db_type == 'mysql'
 
 - name: postgres container
   block: 
@@ -63,7 +63,7 @@
             POSTGRES_PASSWORD: "{{ nextcloud_db_passwd }}"
             PGDATA:            /var/lib/postgresql/data
         volumes: 
-          - "nextcloud-database-vol:/var/lib/postgresql/data:rw"
+          - "cloud-database-vol:/var/lib/postgresql/data:rw"
         networks:
           - name: backend
         networks_cli_compatible: true
@@ -75,4 +75,4 @@
           interval: 10s
           timeout: 5s
           retries: 5
-  when: nextcloud_db_type == 'pgsql'
+  when: cloud_db_type == 'pgsql'
