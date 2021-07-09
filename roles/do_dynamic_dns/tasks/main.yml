@@ -1,18 +1,14 @@
 ---
 # tasks file for dynamic_dns
 
-- name: create dynamic_dns directory
-  file:
-    name: "{{ dynamic_dns_dir }}"
-    owner: "root"
-    group: "root"
-    mode: "0700"
-    state: directory
+- name: install python requests package
+  pip:
+    name: requests
 
 - name: create dynamic_dns update script
   template:
-    src: "dynamic_dns_check.sh.j2"
-    dest: "/usr/local/bin/dynamic_dns_check.sh"
+    src: "dynamic_dns_check.py.j2"
+    dest: "/usr/local/bin/dynamic_dns_check.py"
     owner: "root"
     group: "root"
     mode: "0750"
@@ -22,4 +18,4 @@
   cron:
     name: "Check dynamic dns"
     minute: "*/5"
-    job: "/usr/local/bin/dynamic_dns_check.sh > /var/log/dynamic_dns_check.log 2>&1"
+    job: "/usr/local/bin/dynamic_dns_check.py > /var/log/dynamic_dns_check.log 2>&1"

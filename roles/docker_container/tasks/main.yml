@@ -70,6 +70,13 @@
   when:
     - nextcloud_configure_protonmail|bool
 
+- name: docker synapse
+  include_tasks: synapse.yml
+
+- name: docker element
+  include_tasks: element.yml
+
+
 - name: docker network
   include_tasks: network.yml
   when: state is defined and 'absent' in state

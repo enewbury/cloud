@@ -12,12 +12,9 @@ Onlyoffice and Collabora work only on a x86_64 server because there are no ARM(6
 
 ## Preparation
 
-Install [Ansible](https://www.ansible.com/) and some needed tools by running the following command with a user that can sudo or is root. 
-```bash
-curl -s https://raw.githubusercontent.com/enewbury/nextcloud_setup/master/prepare_system.sh | /bin/bash
-```
+Install [Ansible](https://www.ansible.com/) on your dev machine
 
-Clone this repo and change into the directory nextcloud_on_docker.
+Clone this repo and change into the directory nextcloud_setup.
 ```bash
 git clone https://github.com/enewbury/nextcloud_setup
 
@@ -30,7 +27,7 @@ VMWARE PHOTON OS: Install using the ISO version, currently with OVA of PHOTON OS
 
 ## Configuration
 
-Now you can configure the whole thing by editing the file `inventory` and some other files.
+Now you can configure the whole thing by duplicating `inventory.template` to `inventory` and making changes, starting with the remote ssh address for the server.
 
 ### Preliminary variables
 
@@ -40,8 +37,8 @@ If you have a private server or if you use an AWS domain name like `ec2-52-3-229
 
 *Important:* You will only be able to access Nextcloud through this address. 
 ```ini
-# The domain name for your Nextcloud instance. You'll get a Let's Encrypt certificate for this domain.
-nextcloud_server_fqdn       = nextcloud.example.tld
+# The domain name for your cloud instance. You'll get a Let's Encrypt certificate for this domain.
+cloud_server_fqdn       = nextcloud.example.tld
 ```
 
 Let's Encrypt wants your email address. Enter it here:
@@ -52,10 +49,10 @@ ssl_cert_email              = nextcloud@example.tld
 
 ### Nextcloud variables
 
-Define where you want to find your Nextcloud program, config, database and data files in the hosts filesystem.
+Define where you want to find all your application config and data files in the server.
 ```ini
-# Choose a directory for your Nextcloud data.
-nextcloud_base_dir          = /opt/nextcloud
+# Choose a directory for all of the data for this cloud server.
+cloud_base_dir          = /opt/cloud
 ```
 
 Define your Nextcloud admin user.
@@ -72,10 +69,10 @@ Now it's time to choose and configure your favorite database management system.
 nextcloud_db_type           = 'pgsql'
 
 # Options for Mariadb and PostgreSQL.
-nextcloud_db_host           = 'localhost'
+nextcloud_db_host           = 'cloud-db'
 nextcloud_db_name           = 'nextcloud'
 nextcloud_db_user           = 'nextcloud'
-nextcloud_db_passwd         = ''              # If empty the playbook will generate a random password (stored in {{ nextcloud_base_dir }}/secrets ).
+nextcloud_db_passwd         = ''              # If empty the playbook will generate a random password (stored in {{ cloud_base_dir }}/secrets ).
 nextcloud_db_prefix         = 'oc_'
 ```
 
@@ -119,7 +116,7 @@ nextcloud_mail_smtpport     = 1025
 Setup S3 Buckets as [primary storage](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html)
 
 Create a AWS user with permission to accces the S3 bucket. 
-Provide your AWS Key and Secret below. The default bucket name is: 'nextcloud-{{ nextcloud_server_fqdn }}'.
+Provide your AWS Key and Secret below. The default bucket name is: 'nextcloud-{{ cloud_server_fqdn }}'.
 
 This only works on the initial run of the playbook. **If a file config.php exists already it won't be changed.** This will not migrate an existing Nextcloud installation to a S3 bucket.
 
@@ -145,6 +142,12 @@ backup_hour                 = 4
 backup_minute               = 0
 ```
 
+If using rclone with backblaze, include these variables
+```
+b2_account                  = 
+b2_key                      =
+```
+
 This playbook even supports the integration with an online office suite! You can choose between [Collabora](https://www.collaboraoffice.com/) and [ONLYOFFICE](https://www.onlyoffice.com).
 ```ini
 # Choose an online office suite to integrate with your Nextcloud. Your options are (without quotation marks): 'none', 'collabora' and 'onlyoffice'.
@@ -153,6 +156,7 @@ online_office               = none
 # collabora_dictionaries    = 'en'            # Separate ISO 639-1 codes with a space.
 ```
 
+(DEPRECATED) Using a custom turnserver setup with matrix instead.
 You can also install the TURN server needed for [Nextcloud Talk](https://nextcloud.com/talk/).
 ```ini
 # Set to true to install TURN server for Nextcloud Talk.
@@ -167,30 +171,15 @@ fulltextsearch_enabled      = false
 
 If you want to, you can get access to your database with [Adminer](https://www.adminer.org/). Adminer is a web frontend for your database (like phpMyAdmin).
 ```ini
-# Set to true to enable access to your database with Adminer at https://nextcloud_server_fqdn/adminer. The password will be stored in {{ nextcloud_base_dir }}/secrets.
-adminer_enabled             = false           # The password will be stored in {{ nextcloud_base_dir }}/secrets.
+# Set to true to enable access to your database with Adminer at https://cloud_server_fqdn/adminer. The password will be stored in {{ cloud_base_dir }}/secrets.
+adminer_enabled             = false           # The password will be stored in {{ cloud_base_dir }}/secrets.
 ```
 
 You can install [Portainer](https://www.portainer.io/), a webgui for Docker.
 ```ini
-# Set to true to install Portainer webgui for Docker at https://nextcloud_server_fqdn/portainer/. 
+# Set to true to install Portainer webgui for Docker at https://cloud_server_fqdn/portainer/. 
 portainer_enabled           = false
 portainer_passwd            = ''      # If empty the playbook will generate a random password.
-```
-If you want to use [rclone](https://rclone.org) to backup your data to a cloud storage provider, remove the variable `restic_repo` from `ìnventory` and edit the file `group_var/all` instead.
-```ini
-restic_repo:     "rclone:backup-nextcloud:unique-s3-bucket-name/s3-folder-name"
-rclone_remote: |
-      [backup-nextcloud]
-      type = s3
-      provider = AWS
-      env_auth = false
-      access_key_id = AKIxxxxx
-      secret_access_key = QMpoxxxx
-      region = us-east-1
-      acl = private
-      server_side_encryption = AES256
-      storage_class = STANDARD_IA
 ```
 
 ## Installation
@@ -231,7 +220,7 @@ ok: [localhost] => {
 If you are in a hurry you can set the inventory variables on the cli. But remember if you run the playbook again without the -e options all default values will apply and your systems is likely to be broken.
 
 ```bash
-./nextdocker.yml -e "nextcloud_server_fqdn=nextcloud.example.tld nextcloud_db_type=mysql"
+./nextdocker.yml -e "cloud_server_fqdn=nextcloud.example.tld nextcloud_db_type=mysql"
 ```
 
 ## Expert setup
@@ -248,7 +237,7 @@ and
 
 - `roles\nextcloud_config\defaults\main.yml` for nextcloud settings
 
-Also if you are working on a remote computer through ssh be sure to check the **firewall settings** in `roles/prep_ufw/defaults/main.yml` Only ports 22,80,443 will be opened by default. Please test locally before deploying on your remote (ssh) server, you will get locked out if you use a custom port.
+Also if you are working on a remote computer through ssh be sure to check the **firewall settings** in `roles/prep_ufw/defaults/main.yml` Only ports 22,80,443 will be opened by default, plus ports for a turnserver. Please test locally before deploying on your remote (ssh) server, you will get locked out if you use a custom port.
 
 ### Serving web apps in other containers on the server
 
@@ -268,7 +257,10 @@ to remove **all** docker artifacts. That includes the database volume!
 
 Your data files won't be deleted. You have to do this manually by executing the following.
 ```bash
-rm -rf {{ nextcloud_base_dir }}
+rm -rf {{ cloud_base_dir }}
+rm /usr/local/bin/dynamic_dns_check.py
+rm /usr/local/bin/nextcloud_optimize.sh
+rm /usr/local/bin/backup_cloud.sh
 ```
 
 If you find this Playbook helpful and want to donate something. Please go to this web page donate to children in need. 

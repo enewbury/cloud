@@ -1,0 +1,36 @@
+---
+
+- name: ensures synapse dir exists
+  file:
+    path: "{{ cloud_base_dir }}/synapse"
+    state: directory
+    owner: root
+    group: root
+
+- name: adding homeserver.yaml file
+  template:
+    src: homeserver.yaml.j2
+    dest: "{{ cloud_server_dir }}/synapse/homeserver.yaml"
+    owner: root
+    group: root
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the matrix container"
+  docker_container:
+    name: synapse
+    image: "matrixdotorg/synapse:latest"
+    restart_policy: unless-stopped
+    networks:
+      - name: backend
+    networks_cli_compatible: true
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.matrix.entrypoints: "web-secure"      
+      traefik.http.routers.matrix.rule: "Host(`matrix.{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.synapse.service: matrix
+      traefik.http.services.matrix.loadbalancer.server.port: "8008"
+      com.centurylinklabs.watchtower.enable: "true"
+
+    volumes:
+      - "{{ clouse_base_dir }}/synapse:/data"
+    state: "{{ state | default('started') }}"
+

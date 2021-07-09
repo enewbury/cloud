@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+import requests
+import os
+
+token = '{{ digital_ocean_token }}'
+domain = '{{ digital_ocean_root_domain }}'
+
+records_url = f'https://api.digitalocean.com/v2/domains/{domain}/records/'
+session = requests.Session()
+session.headers = {'Authorization': 'Bearer ' + token }
+
+def get_current_ip():
+    return requests.get('https://api.ipify.org').text.rstrip()
+
+def get_subdomains():
+    records = session.get(records_url + '?type=A').json()
+    return records['domain_records']
+
+def update_turn_conf(ip):
+    os.system("sed -i 's/^\(external-ip\s*=\s*\).*$/" + ip + "/' {{ cloud_coturn_dir }}/turnserver.conf")
+
+def update_dns():
+    current_ip_address = get_current_ip()
+    subdomains = get_subdomains()
+    for sub_info in subdomains:
+        subdomain_ip_address = sub_info['data']
+        subdomain_record_id = sub_info['id']
+        if current_ip_address != subdomain_ip_address:
+            response = session.put(f'{records_url}{subdomain_record_id}', json={'data': current_ip_address})
+            update_turn_conf(current_ip_address)
+            if response.ok:
+                print(f'Subdomain IP address updated to {current_ip_address}')
+            else:
+                print('IP address update failed with message: ' + response.text)
+
+
+if __name__ == '__main__':
+    update_dns()

@@ -6,7 +6,8 @@ localhost ansible_connection=local
 ### Preliminary variables ###
 
 # The domain name for your Nextcloud instance. You'll get a Let's Encrypt certificate for this domain.
-nextcloud_server_fqdn       = nextcloud.example.tld
+cloud_server_fqdn       = nextcloud.example.tld
+cloud_name              = Cloud
 
 # Your email address (for Let's Encrypt).
 ssl_cert_email              = 
@@ -14,7 +15,7 @@ ssl_cert_email              =
 ### Nextcloud variables ###
 
 # Choose a directory for your Nextcloud data.
-nextcloud_base_dir          = /opt/nextcloud
+cloud_base_dir          = /opt/nextcloud
 
 # Choose a username and password for your Nextcloud admin user.
 nextcloud_admin             = 'admin'
@@ -28,7 +29,7 @@ nextcloud_db_type           = 'pgsql'
 nextcloud_db_host           = 'localhost'
 nextcloud_db_name           = 'nextcloud'
 nextcloud_db_user           = 'nextcloud'
-nextcloud_db_passwd         = ''              # If empty the playbook will generate a random password (stored in {{ nextcloud_base_dir }}/secrets ).
+nextcloud_db_passwd         = ''              # If empty the playbook will generate a random password (stored in {{ cloud_base_dir }}/secrets ).
 
 ### Optional variables ###
 
@@ -66,6 +67,9 @@ backup_day                  = *
 backup_hour                 = 4
 backup_minute               = 0
 
+#b2_account                  = 
+#b2_key                      = 
+
 # Choose an online office suite to integrate with your Nextcloud. Your options are (without quotation marks): 'none', 'collabora' and 'onlyoffice'.
 online_office               = none
 # When using Collabora, you're able to install dictionaries alongside with it. Collabora's default is German (de).
@@ -74,13 +78,13 @@ collabora_dictionaries      = 'en'            # Separate ISO 639-1 codes with a 
 # Set to true to install TURN server for Nextcloud Talk.
 talk_install                = false
 
-# Set to true to enable access to your database with Adminer at https://cloud.example.com/adminer/ . The password will be stored in {{ nextcloud_base_dir }}/secrets .
+# Set to true to enable access to your database with Adminer at https://cloud.example.com/adminer/ . The password will be stored in {{ cloud_base_dir }}/secrets .
 adminer_enabled             = false
 
 # Set to true to fulltext search.
 fulltextsearch_enabled      = false
 
-# Set to true to install Portainer webgui for Docker at https://nextcloud_server_fqdn/portainer/ .
+# Set to true to install Portainer webgui for Docker at https://cloud_server_fqdn/portainer/ .
 portainer_enabled           = false
 portainer_passwd            = ''              # If empty the playbook will generate a random password.
 
@@ -88,4 +92,3 @@ portainer_passwd            = ''              # If empty the playbook will gener
 configure_do_dynamic_dns       = false
 digital_ocean_token         =
 digital_ocean_root_domain   =
-digital_ocean_record_id     =

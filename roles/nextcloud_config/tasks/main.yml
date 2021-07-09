@@ -1,13 +1,13 @@
 ---
 - name: generate admin passwd if nextcloud_passwd is empty
   set_fact:
-    nextcloud_passwd: "{{ lookup('password', '{{ nextcloud_credential_store }}/nextcloud_admin_secret chars=ascii_letters,digits length=32') }}"
+    nextcloud_passwd: "{{ lookup('password', '{{ local_credential_store }}/nextcloud_admin_secret chars=ascii_letters,digits length=32') }}"
   when: nextcloud_passwd == ''
 
 - name: first setup nextcloud
   shell: >
     docker exec --user www-data nextcloud php occ  maintenance:install 
-    --database {{ nextcloud_db_type }} --database-host nextcloud-db --database-name {{ nextcloud_db_name }} 
+    --database {{ nextcloud_db_type }} --database-host cloud-db --database-name {{ nextcloud_db_name }} 
     --database-user {{ nextcloud_db_user }} --database-pass {{ nextcloud_db_passwd }} 
     --admin-user {{ nextcloud_admin }} --admin-pass {{ nextcloud_passwd }} --data-dir {{ nextcloud_container_data_dir }}
   when: ( not config_php.stat.exists )
@@ -64,7 +64,7 @@
     mode: 0750
     content: |
       #!/bin/bash
-      docker exec redis redis-cli -a {{ lookup('password', '{{ nextcloud_credential_store }}/redis_secret chars=ascii_letters,digits length=32') }} FLUSHALL
+      docker exec redis redis-cli -a {{ lookup('password', '{{ local_credential_store }}/redis_secret chars=ascii_letters,digits length=32') }} FLUSHALL
       docker exec --user www-data nextcloud php occ files:scan --all
       docker exec --user www-data nextcloud php occ files:scan-app-data
       exit 0
@@ -90,7 +90,7 @@
 - name: modify .htaccess for card and cal dev
   block:
     - name: modifying /opt/nextcloud/www/.htaccess
-      shell: sed -i 's+/remote.php/dav/+https://{{ nextcloud_server_fqdn }}/remote.php/dav/+g' /opt/nextcloud/www/.htaccess
+      shell: sed -i 's+/remote.php/dav/+https://{{ cloud_server_fqdn }}/remote.php/dav/+g' /opt/nextcloud/www/.htaccess
       when:
         - "'fpm' not in docker_nextcloud_image"
 

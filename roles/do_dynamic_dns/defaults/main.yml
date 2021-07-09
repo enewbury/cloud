@@ -1,3 +1,0 @@
----
-# defaults file for dynamicdns
-dynamic_dns_dir: "/var/dynamic_dns"
