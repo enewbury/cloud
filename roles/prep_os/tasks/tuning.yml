@@ -17,9 +17,9 @@
     reload: true
     sysctl_file: /etc/sysctl.conf
 
-- name: check /sys/kernel/mm/transparent_hugepage/enabled 
-  stat:
-    path: /sys/kernel/mm/transparent_hugepage/enabled
+- name: check hugepages status
+  command: grep never /sys/kernel/mm/transparent_hugepage/enabled
+  changed_when: false
   register: hugepage_enabled
 
 - name: disable transparent hugepages
@@ -32,6 +32,9 @@
       group: root
       mode: 0644
 
+  - name: check hugepages status
+    command: grep never /sys/kernel/mm/transparent_hugepage/enabled
+
   - name: enable service disable-transparent-hugepages
     service:
       name: disable-transparent-huge-pages.service
@@ -40,4 +43,4 @@
   when:
     - ansible_memtotal_mb > 2048
     - ansible_architecture == 'x86_64'
-    - hugepage_enabled.stat.isreg is defined and hugepage_enabled.stat.isreg
+    - hugepage_enabled.rc == 1

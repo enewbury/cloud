@@ -4,9 +4,9 @@
   synchronize: src=docker/protonmail dest={{ protonmail_docker_dir }}
   register: protonmail_sync
 
-- name: "Build protonmail login image"
-  shell: "docker build -t protonmail-login docker/protonmail"
-  when: protonmail_sync.changed
+# - name: "Build protonmail login image"
+#   shell: "docker build -t protonmail-login docker/protonmail"
+#   when: protonmail_sync.changed
 
 - name: "Login to protonmail bridge"
   docker_container:

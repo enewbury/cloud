@@ -1,22 +1,19 @@
 ---
 # tasks file for docker_traefik
 
-- name: ensures traefik dir exists
-  file:
-    path: "{{ traefik_config_dir }}"
-    state: directory
-    owner: root
-    group: "{{ ansible_env.SUDO_USER | default('root') }}"
+- name: check if rules file exists
+  stat: 
+    path: "{{ traefik_config_dir }}/acme.json"
+  register: acme_file
 
-- name: ensures acme.json file exists
+- name: creats acme.json file exists
   file:
     path: "{{ traefik_config_dir }}/acme.json"
     state: touch
     owner: root
     group: root
     mode: 0600
-  register: acme_file
-  changed_when: "acme_file.diff.before.atime == acme_file.diff.before.mtime"
+  changed_when: not acme_file.stat.exists
 
 - name: adding traefik.yaml file
   template:

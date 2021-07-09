@@ -21,7 +21,7 @@
 
 - name: docker database
   include_tasks: database.yml
-  when: nextcloud_db_type != 'sqlite'
+  when: cloud_db_type != 'sqlite'
 
 - name: docker redis
   include_tasks: redis.yml
@@ -30,7 +30,7 @@
   include_tasks: adminer.yml
   when:
     - adminer_enabled|bool
-    - nextcloud_db_type != 'sqlite'
+    - cloud_db_type != 'sqlite'
 
 - name: docker nextcloud
   include_tasks: nextcloud.yml

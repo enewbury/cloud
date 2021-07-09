@@ -28,13 +28,16 @@
     - {name: "{{ nextcloud_data_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}"  }
     - {name: "{{ nextcloud_www_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "root", mode: "0755" }
     - {name: "{{ cloud_nginx_dir }}", user: "root", group: "root" }
+    - {name: "{{ cloud_base_dir }}/traefik", user: "root", group: "root" }
+    - {name: "{{ cloud_base_dir }}/element", user: "root", group: "root" }
+    - {name: "{{ cloud_base_dir }}/turn", user: "root", group: "root" }
 
-- name: make sure {{ traefik_config_dir }} is present
+- name: make sure syapse dir exists
   file:
-    name:  "{{ traefik_config_dir }}"
-    mode:  0750
-    owner: root
-    group: "{{ ansible_env.SUDO_USER | default('root') }}"
+    name: "{{ cloud_base_dir }}/synapse"
+    owner: 991
+    group: 991
+    mode: 0750
     state: directory
 
 - name: selinux targets

@@ -7,7 +7,7 @@
 - name: first setup nextcloud
   shell: >
     docker exec --user www-data nextcloud php occ  maintenance:install 
-    --database {{ nextcloud_db_type }} --database-host cloud-db --database-name {{ nextcloud_db_name }} 
+    --database {{ cloud_db_type }} --database-host cloud-db --database-name {{ nextcloud_db_name }} 
     --database-user {{ nextcloud_db_user }} --database-pass {{ nextcloud_db_passwd }} 
     --admin-user {{ nextcloud_admin }} --admin-pass {{ nextcloud_passwd }} --data-dir {{ nextcloud_container_data_dir }}
   when: ( not config_php.stat.exists )

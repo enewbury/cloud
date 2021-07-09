@@ -66,7 +66,7 @@ Now it's time to choose and configure your favorite database management system.
 ```ini
 # You must choose one database management system.
 # Choose between 'pgsql' (PostgreSQL, default), 'mysql' (MariaDB) and 'sqlite' (SQLite).
-nextcloud_db_type           = 'pgsql'
+cloud_db_type           = 'pgsql'
 
 # Options for Mariadb and PostgreSQL.
 nextcloud_db_host           = 'cloud-db'
@@ -220,7 +220,7 @@ ok: [localhost] => {
 If you are in a hurry you can set the inventory variables on the cli. But remember if you run the playbook again without the -e options all default values will apply and your systems is likely to be broken.
 
 ```bash
-./nextdocker.yml -e "cloud_server_fqdn=nextcloud.example.tld nextcloud_db_type=mysql"
+./nextdocker.yml -e "cloud_server_fqdn=nextcloud.example.tld cloud_db_type=mysql"
 ```
 
 ## Expert setup
