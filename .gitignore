@@ -1,2 +1,5 @@
 
 .vscode/settings.json
+secrets
+inventory
+cloud_server_secrets.zip

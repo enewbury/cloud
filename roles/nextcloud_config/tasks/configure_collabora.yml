@@ -11,5 +11,5 @@
   when: install_collabora_app is changed
 
 - name: set collabora wopi url
-  shell: '{{ docker_occ_cmd }} config:app:set richdocuments wopi_url --value https://{{ nextcloud_server_fqdn }}:443'
+  shell: '{{ docker_occ_cmd }} config:app:set richdocuments wopi_url --value https://{{ cloud_server_fqdn }}:443'
   when: install_collabora_app is changed

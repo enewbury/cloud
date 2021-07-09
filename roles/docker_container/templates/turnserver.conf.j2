@@ -4,9 +4,11 @@ no-cli
 fingerprint
 external-ip={{ public_ip.ansible_facts.ipify_public_ip }}
 use-auth-secret
-static-auth-secret={{ lookup('password', '{{ nextcloud_credential_store }}/talk_secret chars=ascii_letters,digits length=32') | lower }}
-realm={{ nextcloud_server_fqdn }}
+static-auth-secret={{ lookup('password', '{{ local_credential_store }}/coturn_secret chars=ascii_letters,digits length=32') | lower }}
+realm=turn.{{ cloud_server_fqdn }}
 total-quota=100
 bps-capacity=0
 stale-nonce
 no-multicast-peers
+min-port=64000
+max-port=65535

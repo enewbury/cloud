@@ -2,14 +2,14 @@
 # defaults file for prep_nextcloud
 
 nextcloud_system_config:
-  - "overwrite.cli.url --value=https://{{ nextcloud_server_fqdn }}"
-  - "trusted_domains 0 --value={{ nextcloud_server_fqdn }}"
+  - "overwrite.cli.url --value=https://{{ cloud_server_fqdn }}"
+  - "trusted_domains 0 --value={{ cloud_server_fqdn }}"
   - "trusted_domains 1 --value=nginx"
   - "trusted_proxies 0 --value={{ traefik_facts.container.NetworkSettings.Networks.backend.IPAddress }}"
   - "redis host --value='redis'"
   - "redis port --value='6379' --type=integer"
   - "redis timeout --value='0' --type=integer"
-  - "redis password --value={{ lookup('password', '{{ nextcloud_credential_store }}/redis_secret chars=ascii_letters,digits length=32') }}"
+  - "redis password --value={{ lookup('password', '{{ local_credential_store }}/redis_secret chars=ascii_letters,digits length=32') }}"
   - "memcache.local --value='\\OC\\Memcache\\Redis'"
   - "memcache.locking --value='\\OC\\Memcache\\Redis'"
   - "filelocking.enabled --value=true --type=boolean"

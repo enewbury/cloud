@@ -23,15 +23,15 @@
     - name: We are ready
       debug:
         msg:
-          - "Your Nextcloud at https://{{ nextcloud_server_fqdn }} is ready."
+          - "Your Nextcloud at https://{{ cloud_server_fqdn }} is ready."
           - "Login with user: {{ nextcloud_admin }} and password: {{ nextcloud_passwd }} "
-          - "Other secrets you'll find in the directory {{ nextcloud_credential_store }} "
+          - "Other secrets you'll find in the directory {{ local_credential_store }} "
       when: (state is undefined or 'absent' not in state)
 
     - name: We are ready
       debug:
         msg:
-          - "Manage your container at https://{{ nextcloud_server_fqdn }}/portainer/"
+          - "Manage your container at https://{{ cloud_server_fqdn }}/portainer/"
           - "Login with user: admin and password: {{ portainer_passwd }} "
       when: (state is undefined or 'absent' not in state) and (portainer_passwd != '')
 

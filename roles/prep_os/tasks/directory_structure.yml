@@ -1,16 +1,16 @@
 ---
 # create all directories
 
-- name: make sure {{ nextcloud_base_dir }} is present
+- name: make sure {{ cloud_base_dir }} is present
   file:
-    name: "{{ nextcloud_base_dir }}"
+    name: "{{ cloud_base_dir }}"
     owner: "{{ ansible_env.SUDO_USER | default('root') }}"
     group: "{{ ansible_env.SUDO_USER | default('root') }}"
     state: directory
 
-- name: make sure {{ nextcloud_credential_store }} is present
+- name: make sure {{ local_credential_store }} is present
   file: 
-    name: '{{ nextcloud_credential_store }}'
+    name: '{{ local_credential_store }}'
     owner: "{{ ansible_env.SUDO_USER | default('root') }}"
     group: "{{ ansible_env.SUDO_USER | default('root') }}"
     mode:  0700
@@ -27,7 +27,7 @@
     - {name: "{{ nextcloud_config_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}" }
     - {name: "{{ nextcloud_data_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}"  }
     - {name: "{{ nextcloud_www_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "root", mode: "0755" }
-    - {name: "{{ nextcloud_nginx_dir }}", user: "root", group: "root" }
+    - {name: "{{ cloud_nginx_dir }}", user: "root", group: "root" }
 
 - name: make sure {{ traefik_config_dir }} is present
   file:
@@ -43,13 +43,13 @@
     setype: container_var_lib_t
     state: present
   loop: 
-    - '{{ nextcloud_base_dir }}(/.*)?'
+    - '{{ cloud_base_dir }}(/.*)?'
   when: 
     - ansible_os_family == 'RedHat'
     - ansible_selinux.status == 'enabled'
     
 - name: restorecon 
-  command: restorecon -Rv '{{ nextcloud_base_dir }}'
+  command: restorecon -Rv '{{ cloud_base_dir }}'
   when: 
     - ansible_os_family == 'RedHat'
     - ansible_selinux.status == 'enabled'

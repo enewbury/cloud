@@ -1,6 +1,13 @@
 ---
 # tasks file to start nextcloud container
 
+- name: ensures nextcloud dir exists
+  file:
+    path: "{{ cloud_base_dir }}/nextcloud"
+    state: directory
+    owner: root
+    group: root
+
 - name: check if config.php exists
   stat:
     path: "{{ nextcloud_config_dir }}/config.php"

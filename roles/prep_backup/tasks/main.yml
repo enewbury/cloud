@@ -15,7 +15,7 @@
 
 - name: generate restic secret if restic_backup_secret is empty
   set_fact:
-    restic_backup_secret: "{{ lookup('password', '{{ nextcloud_credential_store }}/restic_backup_secret chars=ascii_letters,digits length=32') }}"
+    restic_backup_secret: "{{ lookup('password', '{{ local_credential_store }}/restic_backup_secret chars=ascii_letters,digits length=32') }}"
   when: restic_backup_secret == ''
 
 - name: create restic backup directory
@@ -41,8 +41,8 @@
 
 - name: create restic nextcloud backup script
   template:
-    src: "backup_nextcloud.sh.j2"
-    dest: "/usr/local/bin/backup_nextcloud.sh"
+    src: "backup_cloud.sh.j2"
+    dest: "/usr/local/bin/backup_cloud.sh"
     owner: "root"
     group: "root"
     mode: "0750"
@@ -54,4 +54,4 @@
     day: "{{ restic_backup_day }}"
     minute: "{{ restic_backup_minute }}"
     hour: "{{ restic_backup_hour }}"
-    job: "/usr/local/bin/backup_nextcloud.sh > /var/log/backup_nextcloud.log 2>&1"
+    job: "/usr/local/bin/backup_cloud.sh > /var/log/backup_cloud.log 2>&1"

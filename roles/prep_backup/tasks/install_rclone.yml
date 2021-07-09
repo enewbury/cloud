@@ -22,10 +22,9 @@
     state:   directory
 
 - name: create rclone config 
-  blockinfile:
-    content: '{{ rclone_remote }}'
-    path:    '/root/.config/rclone/rclone.conf'
-    create:  true
+  template:
+    src: rclone.conf.j2
+    dest:    '/root/.config/rclone/rclone.conf'
     owner:   'root'
     group:   'root'
     mode:    '0600'

@@ -5,17 +5,17 @@ nextcloud_traefik_label:
   nginx:
     traefik.enable: "false"
     com.centurylinklabs.watchtower.enable: "true"
-    com.centurylinklabs.watchtower.depends-on: "nginx,redis{% if nextcloud_db_type != 'sqlite' %},nextcloud-db{% endif %}"
+    com.centurylinklabs.watchtower.depends-on: "nginx,redis{% if nextcloud_db_type != 'sqlite' %},cloud-db{% endif %}"
 
   apache:
     traefik.enable: "true"
     traefik.http.routers.cloud.entrypoints: "web-secure"
-    traefik.http.routers.cloud.rule: "Host(`{{ nextcloud_server_fqdn }}`)"
+    traefik.http.routers.cloud.rule: "Host(`{{ cloud_server_fqdn }}`)"
     traefik.http.routers.cloud.middlewares: "nextcloud@file"
     traefik.http.routers.nginx.service: "cloud"
     traefik.http.services.nginx.loadbalancer.server.port: "80"
     com.centurylinklabs.watchtower.enable: "true"
-    com.centurylinklabs.watchtower.depends-on: "redis,nextcloud-db"
+    com.centurylinklabs.watchtower.depends-on: "redis,cloud-db"
 
 service_path:
   CentOS: "/usr/lib/systemd/system"

@@ -1,5 +1,11 @@
 ---
 # tasks file to start turnserver container
+- name: ensures turn dir exists
+  file:
+    path: "{{ cloud_coturn_dir }}"
+    state: directory
+    owner: root
+    group: root
 
 - name: get public IP
   ipify_facts:
@@ -8,7 +14,7 @@
 - name: copy turnserver.conf
   template:
     src: "turnserver.conf.j2"
-    dest: "{{ nextcloud_config_dir }}/turnserver.conf"
+    dest: "{{ cloud_coturn_dir }}/turnserver.conf"
     owner: "root"
     group: "root"
     mode: 0644
@@ -16,12 +22,10 @@
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the turnserver container"
   docker_container:
     name: "turn_server"
-    image: "{{ 'serverror' if ansible_architecture == 'aarch64' else 'instrumentisto' }}/coturn:{{ docker_turnserver_image | default('latest') }}"
+    image: "{{ 'serverror' if ansible_architecture == 'aarch64' else 'coturn' }}/coturn:{{ docker_turnserver_image | default('latest') }}"
     restart_policy: "unless-stopped"
     volumes:
       - "turnserver-data-vol:/var/lib/coturn:rw"
-      - "{{nextcloud_config_dir }}/turnserver.conf:/etc/coturn/turnserver.conf"
-    ports:
-      - 0.0.0.0:3478:3478/udp
-      - 0.0.0.0:3478:3478/tcp
+      - "{{ cloud_coturn_dir }}/turnserver.conf:/etc/coturn/turnserver.conf"
+    network_mode: host
     state: '{{ state | default("started") }}'

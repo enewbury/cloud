@@ -6,7 +6,7 @@
     name: redis
     image: redis:{{ docker_redis_image | default('latest') }}
     restart_policy: always
-    command: redis-server --requirepass {{ lookup('password', '{{ nextcloud_credential_store }}/redis_secret chars=ascii_letters,digits length=32') }}
+    command: redis-server --requirepass {{ lookup('password', '{{ local_credential_store }}/redis_secret chars=ascii_letters,digits length=32') }}
     networks:
       - name: backend
     networks_cli_compatible: true

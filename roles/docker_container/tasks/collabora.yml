@@ -11,7 +11,7 @@
      - name:        'backend'
     networks_cli_compatible: true
     env:
-        domain:     "{{ nextcloud_server_fqdn | regex_replace('\\.', '\\.') }}"
+        domain:     "{{ cloud_server_fqdn | regex_replace('\\.', '\\.') }}"
         dictionaries: "{{ collabora_dictionaries }}"
     capabilities:   'MKNOD'
     labels:

@@ -3,7 +3,7 @@ LABEL maintainer="Eric Newbury"
 
 WORKDIR /root
 
-RUN git clone https://github.com/emersion/hydroxide.git
+RUN git clone https://github.com/enewbury/hydroxide.git
 WORKDIR /root/hydroxide
 RUN GO111MODULE=on go build ./cmd/hydroxide
 
