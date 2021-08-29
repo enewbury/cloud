@@ -3,19 +3,33 @@
 
 - name: copy uploadsize.conf to {{ nextcloud_config_dir }}
   copy:
-    src:  'uploadsize.conf'
-    dest: '{{ cloud_nginx_dir }}/uploadsize.conf'
-    owner: 'root'
-    group: 'root'
-    mode:  0644
+    src: "uploadsize.conf"
+    dest: "{{ cloud_nginx_dir }}/uploadsize.conf"
+    owner: "root"
+    group: "root"
+    mode: 0644
 
 - name: copy nginx.conf
   template:
-    src:  'nginx.conf.j2'
-    dest: '{{ cloud_nginx_dir }}/nginx.conf'
-    owner: 'root'
-    group: 'root'
-    mode:  0644
+    src: "nginx.conf.j2"
+    dest: "{{ cloud_nginx_dir }}/nginx.conf"
+    owner: "root"
+    group: "root"
+    mode: 0644
+
+- name: copy static matrix client
+  template:
+    src: "matrix-client.json.j2"
+    dest: "{{ cloud_nginx_dir }}/static/matrix/client.json"
+    owner: "root"
+    group: "root"
+
+- name: copy static matrix server
+  template:
+    src: "matrix-server.json.j2"
+    dest: "{{ cloud_nginx_dir }}/static/matrix/server.json"
+    owner: "root"
+    group: "root"
 
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the nginx container"
   docker_container:
@@ -28,6 +42,7 @@
     volumes:
       - "{{ cloud_nginx_dir }}/nginx.conf:/etc/nginx/nginx.conf"
       - "{{ cloud_nginx_dir }}/uploadsize.conf:/etc/nginx/conf.d/uploadsize.conf"
+      - "{{ cloud_nginx_dir }}/static/:/var/www/static/"
     volumes_from:
       - nextcloud
     labels:
@@ -37,6 +52,11 @@
       traefik.http.routers.nginx.middlewares: "nextcloud@file,nextcloud-redirect@file"
       traefik.http.routers.nginx.service: "nginx"
       traefik.http.services.nginx.loadbalancer.server.port: "80"
-      com.centurylinklabs.watchtower.enable:            "true"
+      com.centurylinklabs.watchtower.enable: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://nginx/status.php || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
     state: "{{ state | default('started') }}"
   register: docker_result

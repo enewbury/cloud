@@ -1,12 +1,12 @@
 ---
-# tasks file to start watchtower container 
+# tasks file to start watchtower container
 
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} watchtower container for auto update"
   docker_container:
     name: watchtower
     image: containrrr/watchtower:{{ docker_watchtower_image | default('latest') }}
-    command: --cleanup --schedule "0 0 0 * * *" --label-enable
+    command: --cleanup --schedule "0 6 0 * * *" --label-enable
     restart_policy: always
-    volumes: 
+    volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     state: "{{ state | default('started') }}"
