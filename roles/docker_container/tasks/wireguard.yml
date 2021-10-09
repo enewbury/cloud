@@ -1,0 +1,32 @@
+---
+- name: ensures wireguard dir exists
+  file:
+    path: "{{ cloud_base_dir }}/wireguard"
+    state: directory
+    owner: root
+    group: root
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the wireguard container"
+  docker_container:
+    name: wireguard
+    image: "lscr.io/linuxserver/wireguard"
+    restart_policy: unless-stopped
+    capabilities:
+      - net_admin
+      - sys_module
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "US/Eastern"
+      SERVERURL: "newbury.cloud"
+      PEERS: "mac,phone"
+    ports:
+      - "51820:51820/udp"
+    sysctls:
+      net.ipv4.conf.all.src_valid_mark: 1
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    volumes:
+      - "{{ cloud_base_dir }}/wireguard:/config"
+      - /lib/modules:/lib/modules
+    state: "{{ state | default('started') }}"
