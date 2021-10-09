@@ -76,6 +76,8 @@
 - name: docker element
   include_tasks: element.yml
 
+- name: docker wireguard
+  include_tasks: wireguard.yml
 
 - name: docker network
   include_tasks: network.yml
