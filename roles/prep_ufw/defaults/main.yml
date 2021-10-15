@@ -33,4 +33,3 @@ ufw_logging: "off"
 
 # always reset the firewall
 ufw_reset: yes
-q
