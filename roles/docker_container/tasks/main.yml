@@ -73,6 +73,9 @@
 - name: docker synapse
   include_tasks: synapse.yml
 
+- name: matrix registration
+  include_tasks: matrix-registration.yml
+
 - name: docker element
   include_tasks: element.yml
 

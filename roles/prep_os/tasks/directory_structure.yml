@@ -9,30 +9,48 @@
     state: directory
 
 - name: make sure {{ local_credential_store }} is present
-  file: 
-    name: '{{ local_credential_store }}'
+  file:
+    name: "{{ local_credential_store }}"
     owner: "{{ ansible_env.SUDO_USER | default('root') }}"
     group: "{{ ansible_env.SUDO_USER | default('root') }}"
-    mode:  0700
+    mode: 0700
     state: directory
 
 - name: make sure nextcloud directories are present
   file:
-    name:  "{{ item.name }}"
+    name: "{{ item.name }}"
     owner: "{{ item.user }}"
     group: "{{ item.group }}"
-    mode:  "{{ item.mode | default('0750') }}"
+    mode: "{{ item.mode | default('0750') }}"
     state: directory
   loop:
-    - {name: "{{ nextcloud_config_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}" }
-    - {name: "{{ nextcloud_data_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}"  }
-    - {name: "{{ nextcloud_www_dir }}", user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}", group: "root", mode: "0755" }
-    - {name: "{{ cloud_nginx_dir }}", user: "root", group: "root" }
-    - {name: "{{ cloud_base_dir }}/traefik", user: "root", group: "root" }
-    - {name: "{{ cloud_base_dir }}/element", user: "root", group: "root" }
-    - {name: "{{ cloud_base_dir }}/turn", user: "root", group: "root" }
+    - {
+        name: "{{ nextcloud_config_dir }}",
+        user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}",
+        group: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}",
+      }
+    - {
+        name: "{{ nextcloud_data_dir }}",
+        user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}",
+        group: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}",
+      }
+    - {
+        name: "{{ nextcloud_www_dir }}",
+        user: "{{ 82 if ( 'alpine' in docker_nextcloud_image ) else 33 }}",
+        group: "root",
+        mode: "0755",
+      }
+    - { name: "{{ cloud_nginx_dir }}", user: "root", group: "root" }
+    - { name: "{{ cloud_base_dir }}/traefik", user: "root", group: "root" }
+    - { name: "{{ cloud_base_dir }}/element", user: "root", group: "root" }
+    - { name: "{{ cloud_base_dir }}/turn", user: "root", group: "root" }
+    - {
+        name: "{{ cloud_base_dir }}/matrix-registration",
+        user: "root",
+        group: "root",
+      }
 
-- name: make sure syapse dir exists
+- name: make sure synapse dir exists
   file:
     name: "{{ cloud_base_dir }}/synapse"
     owner: 991
@@ -45,15 +63,14 @@
     target: "{{ item }}"
     setype: container_var_lib_t
     state: present
-  loop: 
-    - '{{ cloud_base_dir }}(/.*)?'
-  when: 
+  loop:
+    - "{{ cloud_base_dir }}(/.*)?"
+  when:
     - ansible_os_family == 'RedHat'
     - ansible_selinux.status == 'enabled'
-    
-- name: restorecon 
+
+- name: restorecon
   command: restorecon -Rv '{{ cloud_base_dir }}'
-  when: 
+  when:
     - ansible_os_family == 'RedHat'
     - ansible_selinux.status == 'enabled'
-    

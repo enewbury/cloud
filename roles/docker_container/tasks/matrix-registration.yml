@@ -1,0 +1,36 @@
+---
+- name: adding config file
+  template:
+    src: matrix-registration-config.yaml.j2
+    dest: "{{ cloud_base_dir }}/matrix-registration/config.yaml"
+    owner: root
+    group: root
+
+- name: adding registration curl scripts
+  template:
+    src: matrix-registration.sh.j2
+    dest: "{{ cloud_base_dir }}/matrix-registration/reg.sh"
+    group: root
+    owner: root
+    mode: "0750"
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the matrix registration container"
+  docker_container:
+    name: matrix-registration
+    image: "zeratax/matrix-registration:v0.9.1"
+    command: serve
+    restart_policy: unless-stopped
+    networks:
+      - name: backend
+    networks_cli_compatible: true
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.matrix-registration.entrypoints: "web-secure"
+      traefik.http.routers.matrix-registration.rule: "Host(`chat.{{ cloud_server_fqdn }}`) && (Path(`/register`) || PathPrefix(`/static/`))"
+      traefik.http.routers.matrix-registration.service: matrix-registration
+      traefik.http.services.matrix-registration.loadbalancer.server.port: "5000"
+      com.centurylinklabs.watchtower.enable: "true"
+
+    volumes:
+      - "{{ cloud_base_dir }}/matrix-registration:/data"
+    state: "{{ state | default('started') }}"

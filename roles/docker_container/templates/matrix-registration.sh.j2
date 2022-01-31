@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+case $1 in
+"create") 
+    curl -X POST \
+     -H "Authorization: SharedSecret {{ lookup('password', '{{ local_credential_store }}/admin_api_shared_secret chars=ascii_letters,digits length=32') }}" \
+     -H "Content-Type: application/json" \
+     -d '{"max_usage": $2, "expiration_date": "2021-12-04"}' \
+     http://matrix-registration:5000/api/token
+;;
+"delete") 
+    curl -X PATCH \
+     -H "Authorization: SharedSecret lookup('password', '{{ local_credential_store }}/admin_api_shared_secret chars=ascii_letters,digits length=32') }}" \
+     -H "Content-Type: application/json" \
+     -d '{"disabled": true}' \
+     "http://matrix-registration:5000/api/token/$2"
+;;
+"list")
+    curl -H "Authorization: SharedSecret lookup('password', '{{ local_credential_store }}/admin_api_shared_secret chars=ascii_letters,digits length=32') }}" \
+     http://matrix-registration:5000/api/token
+;;
+*) echo "Unknown command $1";;
+esac
