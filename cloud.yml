@@ -1,7 +1,7 @@
 #!/usr/bin/env ansible-playbook
 
-- name: install nextcloud
-  hosts: nextcloud
+- name: install cloud
+  hosts: cloud
   become: true
 
   roles:
@@ -25,7 +25,7 @@
         msg:
           - "Your Nextcloud at https://{{ cloud_server_fqdn }} is ready."
           - "Login with user: {{ nextcloud_admin }} and password: {{ nextcloud_passwd }} "
-          - "Other secrets you'll find in the directory {{ local_credential_store }} "
+          - "Other secrets you'll find in the local directory {{ local_credential_store }} "
       when: (state is undefined or 'absent' not in state)
 
     - name: We are ready
