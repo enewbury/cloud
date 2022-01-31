@@ -205,12 +205,10 @@ ok: [localhost] => {
 If you are in a hurry you can set the inventory variables on the cli. But remember if you run the playbook again without the -e options all default values will apply and your systems is likely to be broken.
 
 ```bash
-./nextdocker.yml -e "cloud_server_fqdn=nextcloud.example.tld cloud_db_type=mysql"
+./cloud.yml -e "cloud_server_fqdn=nextcloud.example.tld cloud_db_type=mysql"
 ```
 
 ## Expert setup
-
-If you change anything in the below mentioned files the playbook might not work anymore. You need a basic understanding of Linux, Ansible, Jinja2 and yaml to do so.
 
 If you want to do more fine tuning you may have a look at:
 
@@ -223,10 +221,6 @@ and
 - `roles\nextcloud_config\defaults\main.yml` for nextcloud settings
 
 Also if you are working on a remote computer through ssh be sure to check the **firewall settings** in `roles/prep_ufw/defaults/main.yml` Only ports 22,80,443 will be opened by default, plus ports for a turnserver. Please test locally before deploying on your remote (ssh) server, you will get locked out if you use a custom port.
-
-### Serving web apps in other containers on the server
-
-If you have other containers serving apps on your server and wish to use the Traefik2-container created by this playbook as a reverse proxy for them take a look [routing other containers to traefik](docker/routing-other-containers-to-traefik.md). There is also a [sample config](./docker/docker-compose-whoami.yml).
 
 ## Remove Nextcloud
 
@@ -245,9 +239,4 @@ Your data files won't be deleted. You have to do this manually by executing the 
 rm -rf {{ cloud_base_dir }}
 rm /usr/local/bin/dynamic_dns_check.py
 rm /usr/local/bin/nextcloud_optimize.sh
-rm /usr/local/bin/backup_cloud.sh
 ```
-
-If you find this Playbook helpful and want to donate something. Please go to this web page donate to children in need. 
-
-https://wir-fuer-kinder-in-not.org/ and click on "Spenden" (Donate)
