@@ -1,14 +1,8 @@
-# Install Nextcloud (Latest) + Database (MariaDB/PostgreSQL/SQLite) + Encryption (Let's Encrypt Certificate/Self-signed) + Extra options on Docker
+# Install Homeserver cloud infrastructure with Nextcloud, Matrix, and VPN
 
 100% Handsfree & Ready to login.
 
-Right now this will run on Ubuntu 18/20, Debian 9/10, CentOS 7, Amazon Linux 2, VMWare Photon OS
-
-The playbook runs on x86_64 and ARM(64) servers. It's tested on AWS EC2, Scaleway Server and on Rasberry 3+ running Debian 9.
-
-Onlyoffice and Collabora work only on a x86_64 server because there are no ARM(64) images.
-
-> **WARNING**: This a new version of this Playbook using Traefik v2. Don't run this Playbook to update your installation from a previous version of this Playbook. This may break your system.
+This playbook allows you to integrate with a protonmail server, and uses Nginx instead of apache.
 
 ## Preparation
 
@@ -16,18 +10,16 @@ Install [Ansible](https://www.ansible.com/) on your dev machine
 
 Clone this repo and change into the directory nextcloud_setup.
 ```bash
-git clone https://github.com/enewbury/nextcloud_setup
+git clone https://github.com/enewbury/cloud
 
-cd nextcloud_setup
+cd cloud
 ```
 
 Note that root must have also sudo right otherwise the script will complain. Some hoster use distros where root is not in the sudoers file. In this case you have to add `root ALL=(ALL) NOPASSWD:ALL` to /etc/sudoers.
 
-VMWARE PHOTON OS: Install using the ISO version, currently with OVA of PHOTON OS when an update is preformed the docker service does not restart. Photon OS requires a restart after running prepare_system.sh, that is part of script.
-
 ## Configuration
 
-Now you can configure the whole thing by duplicating `inventory.template` to `inventory` and making changes, starting with the remote ssh address for the server.
+Now you can configure the whole thing by duplicating `inventory.template.cfg` to `inventory.cfg` and making changes, starting with the remote ssh address for the server.
 
 ### Preliminary variables
 
@@ -38,22 +30,23 @@ If you have a private server or if you use an AWS domain name like `ec2-52-3-229
 *Important:* You will only be able to access Nextcloud through this address. 
 ```ini
 # The domain name for your cloud instance. You'll get a Let's Encrypt certificate for this domain.
-cloud_server_fqdn       = nextcloud.example.tld
+cloud_server_fqdn       = cloud.example.tld
 ```
 
 Let's Encrypt wants your email address. Enter it here:
 ```ini
 # Your email address (for Let's Encrypt).
-ssl_cert_email              = nextcloud@example.tld
+ssl_cert_email              = me@example.tld
 ```
-
-### Nextcloud variables
 
 Define where you want to find all your application config and data files in the server.
 ```ini
 # Choose a directory for all of the data for this cloud server.
+
 cloud_base_dir          = /opt/cloud
 ```
+
+### Nextcloud variables
 
 Define your Nextcloud admin user.
 ```ini
@@ -94,24 +87,23 @@ nextcloud_mail_smtpport     = 587
 nextcloud_mail_smtpname     =
 nextcloud_mail_smtppwd      =
 ```
-
-You can also configure a protonmail bridge to run a local smtp server that connects to Protonmail's secure apis.
+You can also use protonmail and install the protonmail bridge to run on the server since protonmail doesn't expose a global smtp server.
+simply enable protonmail with the option below, and set a protonmail username and password. You no longer need to set a `nextcloud_mail_smtppwd` but you still need to set the username (just your protonmail username). For authorization, you will use PLAIN since it only runs locally.
 ```ini
-# Setup the Nextcloud protonmail server.
-nextcloud_configure_protonmail    = false
-protonmail_username         =
-protonmail_password         =
-nextcloud_mail_from         =
-nextcloud_mail_smtpmode     = smtp
-nextcloud_mail_smtpauthtype = LOGIN
-nextcloud_mail_domain       = localhost
-nextcloud_mail_smtpname     =
-nextcloud_mail_smtpsecure   = tls
-nextcloud_mail_smtpauth     = 1
-nextcloud_mail_smtphost     =
-nextcloud_mail_smtpport     = 1025
-```
+nextcloud_configure_protonmail = true
+protonmail_username         = username
+protonmail_password         = '<password>'
 
+nextcloud_configure_mail    = true
+nextcloud_mail_from         = notifications 
+nextcloud_mail_smtpmode     = smtp
+nextcloud_mail_smtpauthtype = PLAIN
+nextcloud_mail_smtpsecure   = 
+nextcloud_mail_smtpauth     = 1
+nextcloud_mail_smtphost     = protonmail
+nextcloud_mail_smtpport     = 1025
+nextcloud_mail_smtpname     = eric.newbury
+```
 
 Setup S3 Buckets as [primary storage](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html)
 
@@ -122,8 +114,8 @@ This only works on the initial run of the playbook. **If a file config.php exist
 
 ```ini
 # Use S3 Bucket as primary storage
-aws_s3_key            = 'AKIAUYIK6HF7ZKUBFG5D'
-aws_s3_secret         = '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'
+aws_s3_key            = 'keyXXXXXXXXXXXXXXXX'
+aws_s3_secret         = 'secretXXXXXXXXXXXXXXXXXXXX'
 aws_s3_bucket_name    = 'nextcloud-nextcloud.example.tld'
 aws_s3_hostname       = 's3.amazonaws.com'
 aws_s3_port           = '443'
@@ -156,13 +148,6 @@ online_office               = none
 # collabora_dictionaries    = 'en'            # Separate ISO 639-1 codes with a space.
 ```
 
-(DEPRECATED) Using a custom turnserver setup with matrix instead.
-You can also install the TURN server needed for [Nextcloud Talk](https://nextcloud.com/talk/).
-```ini
-# Set to true to install TURN server for Nextcloud Talk.
-talk_install                = false
-```
-
 If you want to use fulltext search.  
 ```ini
 # Set to true to fulltext search.
@@ -186,7 +171,7 @@ portainer_passwd            = ''      # If empty the playbook will generate a ra
 
 Run the Ansible playbook.
 ```bash
-./nextdocker.yml
+./cloud.yml
 ```
 
 Your Nextcloud access credentials will be displayed at the end of the run.
@@ -195,15 +180,15 @@ Your Nextcloud access credentials will be displayed at the end of the run.
 ok: [localhost] => {
     "msg": [
         "Your Nextcloud at https://nextcloud.example.com is ready.",
-        "Login with user: admin and password: fTkLgvPYdmjfalP8XgMsEg7plnoPsTvp ",
-        "Other secrets you'll find in the directory /opt/nextcloud/secrets "
+        "Login with user: admin and password: <password> ",
+        "Other secrets you'll find in your current directory under ./secrets "
     ]
 }
 ....
 ok: [localhost] => {
     "msg": [
         "Manage your container at https://portainer.example.com/ .",
-        "Login with user: admin and password: CqDy4SqAXC5kEU0hHGQ5IucdBegwaVXa "
+        "Login with user: admin and password: <password> "
     ]
 }
 ....
@@ -211,7 +196,7 @@ ok: [localhost] => {
     "msg": [
         "restic backup is configured. Keep your credentials in a safe place.",
         "RESTIC_REPOSITORY='/var/nc-backup'",
-        "RESTIC_PASSWORD='ILIOxgRbmrvmvsUhtI7VtOcIz6II10jq'"
+        "RESTIC_PASSWORD='<password>'"
     ]
 }
 
