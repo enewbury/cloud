@@ -1,0 +1,45 @@
+server_location: "http://synapse:8008"
+server_name: "{{ cloud_server_fqdn }}"
+registration_shared_secret: "{{ lookup('password', '{{ local_credential_store }}/synapse_registration_secret chars=ascii_letters,digits length=32') }}" # see your synapse's homeserver.yaml
+admin_api_shared_secret: "{{ lookup('password', '{{ local_credential_store }}/admin_api_shared_secret chars=ascii_letters,digits length=32') }}" # to generate tokens via the web api
+base_url: "" # e.g. '/element' for https://example.tld/element/register
+client_redirect: "https://chat.{{ cloud_server_fqdn }}/#/login"
+client_logo: "static/images/element-logo.png" # use '{cwd}' for current working directory
+db: "sqlite:////data/db.sqlite3"
+host: "0.0.0.0"
+port: 5000
+rate_limit: ["10 per day", "3 per minute"]
+allow_cors: false
+ip_logging: false
+logging:
+  disable_existing_loggers: false
+  version: 1
+  root:
+    level: DEBUG
+    handlers: [console, file]
+  formatters:
+    brief:
+      format: "%(name)s - %(levelname)s - %(message)s"
+    precise:
+      format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: INFO
+      formatter: brief
+      stream: ext://sys.stdout
+    file:
+      class: logging.handlers.RotatingFileHandler
+      formatter: precise
+      level: INFO
+      filename: /data/m_reg.log
+      maxBytes: 10485760 # 10MB
+      backupCount: 3
+      encoding: utf8
+# password requirements
+password:
+  min_length: 8
+# username requirements
+username:
+  validation_regex: [] #list of regexes that the selected username must match.        Example: '[a-zA-Z]\.[a-zA-Z]'
+  invalidation_regex: [] #list of regexes that the selected username must NOT match.  Example: '(admin|support)'
