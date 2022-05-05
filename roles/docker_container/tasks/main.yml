@@ -82,6 +82,13 @@
 - name: docker wireguard
   include_tasks: wireguard.yml
 
+- name: docker photoprism
+  include_tasks: 
+    file: photoprism.yml
+    apply:
+      tags: photos
+  tags: photos
+
 - name: docker network
   include_tasks: network.yml
   when: state is defined and 'absent' in state
