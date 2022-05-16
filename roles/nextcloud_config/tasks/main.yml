@@ -25,17 +25,6 @@
       when:
         - nextcloud_configure_mail|bool
 
-    - name: set nextcloud mail config.php values
-      shell: "{{ docker_occ_cmd }} config:system:set {{ item }}"
-      loop: "{{ nextcloud_protonmail_config }}"
-      when:
-        - nextcloud_configure_protonmail|bool
-
-    - name: set nextcloud protonmail password config.php value
-      shell: "{{ docker_occ_cmd }} config:system:set mail_smtppassword --value='{{ protonmail_local_password }}'"
-      when:
-        - nextcloud_configure_protonmail|bool
-
     - name: install {{ item.name }} app
       shell: "{{ docker_occ_cmd }} app:install {{ item.name }}"
       args:

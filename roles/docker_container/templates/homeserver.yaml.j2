@@ -2330,17 +2330,17 @@ ui_auth:
 email:
   # The hostname of the outgoing SMTP server to use. Defaults to 'localhost'.
   #
-  smtp_host: protonmail
+  smtp_host: {{ mail_server_domain }}
 
   # The port on the mail server for outgoing SMTP. Defaults to 25.
   #
-  smtp_port: 1025
+  smtp_port: {{ mail_server_port }}
 
   # Username/password for authentication to the SMTP server. By default, no
   # authentication is attempted.
   #
-  smtp_user: "{{ protonmail_username }}"
-  smtp_pass: "{{ protonmail_local_password }}"
+  smtp_user: "{{ mail_server_user }}"
+  smtp_pass: "{{ mail_server_pswd }}"
 
   # Uncomment the following to require TLS transport security for SMTP.
   # By default, Synapse will connect over plain text, and will then switch to
