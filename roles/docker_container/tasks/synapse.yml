@@ -6,6 +6,7 @@
     dest: "{{ cloud_base_dir }}/synapse/homeserver.yaml"
     owner: 991
     group: 991
+  tags: synapse
 
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the matrix container"
   docker_container:
@@ -26,4 +27,5 @@
     volumes:
       - "{{ cloud_base_dir }}/synapse:/data"
     state: "{{ state | default('started') }}"
+  tags: synapse
 

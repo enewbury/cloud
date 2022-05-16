@@ -1,24 +1,39 @@
 ---
 # tasks file to start onlyoffice container
 
+- name: onlyoffice | generate secret
+  set_fact:
+    onlyoffice_secret: "{{ lookup('password', '{{ local_credential_store }}/onlyoffice_secret chars=ascii_letters,digits length=32') }}"
+  tags: onlyoffice
+
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the onlyoffice container"
   docker_container:
-    name: "onlyoffice_documentserver"
+    name: "onlyoffice"
     image: 'onlyoffice/documentserver:{{ docker_onlyoffice_image | default("latest") }}'
     restart_policy: "always"
     networks:
       - name: "backend"
     networks_cli_compatible: true
+    env:
+      JWT_ENABLED: "true"
+      JWT_SECRET: "{{ onlyoffice_secret }}"
     labels:
+      traefik.enable: "true"
+      traefik.http.serversTransports.onlyoffice.disableHTTP2: "true"
+      traefik.http.routers.onlyoffice.entrypoints: "web-secure"
+      traefik.http.routers.onlyoffice.rule: "Host(`office.{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.onlyoffice.service: onlyoffice
+      traefik.http.routers.onlyoffice.middlewares: "onlyoffice@file"
+      traefik.http.services.onlyoffice.loadbalancer.server.port: "80"
       com.centurylinklabs.watchtower.enable: "true"
-      com.centurylinklabs.watchtower.depends-on: "nextcloud{% if 'fpm' in docker_nextcloud_image %},nginx{% endif %}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "curl --fail http://onlyoffice_documentserver/healthcheck || exit 1",
+          "curl --fail http://onlyoffice/healthcheck || exit 1",
         ]
       interval: 20s
       timeout: 10s
       retries: 5
     state: '{{ state | default("started") }}'
+  tags: onlyoffice

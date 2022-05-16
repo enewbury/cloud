@@ -63,17 +63,6 @@ nextcloud_mail_config:
   - "mail_smtpname     --value={{ nextcloud_mail_smtpname }}"
   - "mail_smtppassword --value={{ nextcloud_mail_smtppwd }}"
 
-nextcloud_protonmail_config:
-  - "mail_from_address --value={{ nextcloud_mail_from }}"
-  - "mail_domain       --value={{ nextcloud_mail_domain }}"
-  - "mail_smtpmode     --value=smtp"
-  - "mail_smtpsecure   --value="
-  - "mail_smtpauthtype --value=PLAIN"
-  - "mail_smtpauth     --value=1"
-  - "mail_smtphost     --value=protonmail"
-  - "mail_smtpport     --value=1025"
-  - "mail_smtpname     --value={{ protonmail_username }}"
-
 nextcloud_app_config:
   - name: survey_client
     state: disable

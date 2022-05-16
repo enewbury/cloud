@@ -34,23 +34,6 @@ http {
         server nextcloud:9000;
     }
 
-{% if (online_office == 'onlyoffice') and (ansible_architecture == 'x86_64') %}
-    map $http_host $this_host {
-        "" $host;
-        default $http_host;
-    }
-
-    map $http_x_forwarded_proto $the_scheme {
-        default $http_x_forwarded_proto;
-        "" $scheme;
-    }
-
-    map $http_x_forwarded_host $the_host {
-       default $http_x_forwarded_host;
-       "" $this_host;
-    }
-{% endif %}
-
     server {
         listen 80;
 
@@ -80,62 +63,12 @@ http {
             log_not_found off;
             access_log off;
         }
-{% if (online_office == 'collabora') and (ansible_architecture == 'x86_64') %}
-
-        location ^~ /loleaflet {
-            proxy_pass https://collabora_online:9980;
-             proxy_set_header Host $http_host;
-        }
-        
-        location ^~ /hosting/discovery {
-            proxy_pass https://collabora_online:9980;
-            proxy_set_header Host $http_host;
-        }
-         
-        location ^~ /lool {
-            proxy_pass https://collabora_online:9980;
-            proxy_set_header Host $http_host;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-        }
-
-        location ^~ /hosting/capabilities {
-            proxy_pass https://collabora_online:9980;
-            proxy_set_header Host $http_host;
-        }
-{% endif %}
-
-{% if (online_office == 'onlyoffice') and (ansible_architecture == 'x86_64') %}
-        location ~* ^/ds-vpath/ {
-                rewrite /ds-vpath/(.*) /$1  break;
-                proxy_pass http://onlyoffice_documentserver;
-                proxy_redirect     off;
-
-                client_max_body_size 100m;
-
-                proxy_http_version 1.1;
-
-                proxy_set_header Host $http_host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Host $the_host/ds-vpath;
-                proxy_set_header X-Forwarded-Proto $the_scheme;
-        }
-{% endif %}
 
         # The following 2 rules are only needed for the user_webfinger app.
         # Uncomment it if you're planning to use this app.
         # rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
         # rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json last;
 
-        location ^~ /.well-known {
-            location = /.well-known/carddav { return 301 $scheme://$host/remote.php/dav; }
-            location = /.well-known/caldav  { return 301 $scheme://$host/remote.php/dav; }
-            location ^~ /.well-known/matrix/ { alias /var/www/static/matrix/; try_files $uri $uri.json \404; }
-            location ^~ /.well-known        { return 301 /index.php$uri; }
-
-            try_files $uri $uri/ =404;
-        }
         # Remove X-Powered-By, which is an information leak
         fastcgi_hide_header X-Powered-By;
 
