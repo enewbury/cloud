@@ -14,7 +14,7 @@
 - name: setup onlyoffice app
   shell: '{{ docker_occ_cmd }} --no-warnings config:system:set {{ item }}'
   loop:
-    - 'onlyoffice DocumentServerUrl --value="https://office.newbury.cloud"'
+    - 'onlyoffice DocumentServerUrl --value="https://office.{{ cloud_server_fqdn }}"'
     - 'onlyoffice DocumentServerInternalUrl --value="http://onlyoffice/"'
     - 'onlyoffice StorageUrl --value="http://nginx/"'
     - 'onlyoffice secret --value="{{ onlyoffice_secret }}"'
