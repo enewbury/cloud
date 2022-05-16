@@ -55,11 +55,8 @@ nextcloud_admin             = 'admin'
 nextcloud_passwd            = ''              # If empty the playbook will generate a random password.
 ```
 
-Now it's time to choose and configure your favorite database management system.
+Now it's time to choose and configure postgres.
 ```ini
-# You must choose one database management system.
-# Choose between 'pgsql' (PostgreSQL, default), 'mysql' (MariaDB) and 'sqlite' (SQLite).
-cloud_db_type           = 'pgsql'
 
 # Options for Mariadb and PostgreSQL.
 nextcloud_db_host           = 'cloud-db'
@@ -140,14 +137,6 @@ b2_account                  =
 b2_key                      =
 ```
 
-This playbook even supports the integration with an online office suite! You can choose between [Collabora](https://www.collaboraoffice.com/) and [ONLYOFFICE](https://www.onlyoffice.com).
-```ini
-# Choose an online office suite to integrate with your Nextcloud. Your options are (without quotation marks): 'none', 'collabora' and 'onlyoffice'.
-online_office               = none
-# When using Collabora, you're able to install dictionaries alongside with it. Collabora's default is German (de).
-# collabora_dictionaries    = 'en'            # Separate ISO 639-1 codes with a space.
-```
-
 If you want to use fulltext search.  
 ```ini
 # Set to true to fulltext search.
@@ -205,7 +194,7 @@ ok: [localhost] => {
 If you are in a hurry you can set the inventory variables on the cli. But remember if you run the playbook again without the -e options all default values will apply and your systems is likely to be broken.
 
 ```bash
-./cloud.yml -e "cloud_server_fqdn=nextcloud.example.tld cloud_db_type=mysql"
+./cloud.yml -e "cloud_server_fqdn=nextcloud.example.tld"
 ```
 
 ## Expert setup
