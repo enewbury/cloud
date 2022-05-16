@@ -5,7 +5,7 @@ nextcloud_traefik_label:
   nginx:
     traefik.enable: "false"
     com.centurylinklabs.watchtower.enable: "true"
-    com.centurylinklabs.watchtower.depends-on: "nginx,redis{% if cloud_db_type != 'sqlite' %},cloud-db{% endif %}"
+    com.centurylinklabs.watchtower.depends-on: "nginx,redis,cloud-db"
 
   apache:
     traefik.enable: "true"

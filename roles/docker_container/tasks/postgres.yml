@@ -1,0 +1,59 @@
+---
+# tasks file for docker_mysql
+
+- name: postgres | generate admin passwd
+  set_fact:
+    db_admin_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_admin_password chars=ascii_letters,digits length=32') }}"
+
+- name: postgres | generate nextcloud passwd
+  set_fact:
+    db_nextcloud_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_nextcloud_password chars=ascii_letters,digits length=32') }}"
+
+- name: postgres | generate synapse passwd
+  set_fact:
+    db_synapse_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_synapse_password chars=ascii_letters,digits length=32') }}"
+
+- name: postgres | create data dump directory
+  file:
+    name: '{{ cloud_database_dump_dir }}'
+    owner: root
+    group: root
+    mode: 0700
+    state: directory
+
+- name: postgres | copy db initialization script
+  copy:
+    src: initialize_databases.sh
+    dest: '{{ cloud_base_dir }}/db-initialization/'
+    owner: 999
+    group: 999
+    mode: 0750
+
+- name: 'postgres | create data volume'
+  docker_volume:
+    name: 'postgres-14-vol'
+    state: present
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} postgres container"
+  docker_container:
+    name: postgres
+    image: postgres:14
+    restart_policy: always
+    tty: yes
+    env:
+      POSTGRES_PASSWORD: "{{ db_admin_pswd}}"
+      PGDATA:            /var/lib/postgresql/data
+      POSTGRES_MULTIPLE_DATABASES: "nextcloud:{{ db_nextcloud_pswd }},synapse:{{ db_synapse_pswd }}:C"
+    volumes: 
+      - "{{ cloud_base_dir }}/db-initialization:/docker-entrypoint-initdb.d"
+      - "postgres-14-vol:/var/lib/postgresql/data:rw"
+    networks:
+      - name: backend
+    labels:
+      com.centurylinklabs.watchtower.enable:         "true"
+    state: "{{ state | default('started') }}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

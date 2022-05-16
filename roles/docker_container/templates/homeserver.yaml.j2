@@ -51,6 +51,26 @@ pid_file: /data/homeserver.pid
 #
 public_baseurl: https://matrix.{{ cloud_server_fqdn }}/
 
+# Uncomment the following to tell other servers to send federation traffic on
+# port 443.
+#
+# By default, other servers will try to reach our server on port 8448, which can
+# be inconvenient in some environments.
+#
+# Provided 'https://<server_name>/' on port 443 is routed to Synapse, this
+# option configures Synapse to serve a file at
+# 'https://<server_name>/.well-known/matrix/server'. This will tell other
+# servers to send traffic to port 443 instead.
+#
+# See https://matrix-org.github.io/synapse/latest/delegate.html for more
+# information.
+#
+# Defaults to 'false'.
+#
+serve_server_wellknown: true
+
+
+
 # Set the soft limit on the number of file descriptors synapse can use
 # Zero is used to indicate synapse should set the soft limit to the
 # hard limit.
@@ -805,9 +825,9 @@ database:
   name: psycopg2
   args:
     database: "synapse"
-    user: "{{ synapse_db_user }}"
-    password: "{{ synapse_db_password }}"
-    host: cloud-db
+    user: "synapse"
+    password: "{{ db_synapse_pswd }}"
+    host: postgres
     port: 5432
     cp_min: 5
     cp_max: 10
@@ -2310,17 +2330,17 @@ ui_auth:
 email:
   # The hostname of the outgoing SMTP server to use. Defaults to 'localhost'.
   #
-  smtp_host: protonmail
+  smtp_host: {{ mail_server_domain }}
 
   # The port on the mail server for outgoing SMTP. Defaults to 25.
   #
-  smtp_port: 1025
+  smtp_port: {{ mail_server_port }}
 
   # Username/password for authentication to the SMTP server. By default, no
   # authentication is attempted.
   #
-  smtp_user: "{{ protonmail_username }}"
-  smtp_pass: "{{ protonmail_local_password }}"
+  smtp_user: "{{ mail_server_user }}"
+  smtp_pass: "{{ mail_server_pswd }}"
 
   # Uncomment the following to require TLS transport security for SMTP.
   # By default, Synapse will connect over plain text, and will then switch to

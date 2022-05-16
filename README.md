@@ -55,20 +55,6 @@ nextcloud_admin             = 'admin'
 nextcloud_passwd            = ''              # If empty the playbook will generate a random password.
 ```
 
-Now it's time to choose and configure your favorite database management system.
-```ini
-# You must choose one database management system.
-# Choose between 'pgsql' (PostgreSQL, default), 'mysql' (MariaDB) and 'sqlite' (SQLite).
-cloud_db_type           = 'pgsql'
-
-# Options for Mariadb and PostgreSQL.
-nextcloud_db_host           = 'cloud-db'
-nextcloud_db_name           = 'nextcloud'
-nextcloud_db_user           = 'nextcloud'
-nextcloud_db_passwd         = ''              # If empty the playbook will generate a random password (stored in {{ cloud_base_dir }}/secrets ).
-nextcloud_db_prefix         = 'oc_'
-```
-
 ### Optional variables
 
 If you want to setup the Nextcloud mail system put your mail server config here.
@@ -87,42 +73,6 @@ nextcloud_mail_smtpport     = 587
 nextcloud_mail_smtpname     =
 nextcloud_mail_smtppwd      =
 ```
-You can also use protonmail and install the protonmail bridge to run on the server since protonmail doesn't expose a global smtp server.
-simply enable protonmail with the option below, and set a protonmail username and password. You no longer need to set a `nextcloud_mail_smtppwd` but you still need to set the username (just your protonmail username). For authorization, you will use PLAIN since it only runs locally.
-```ini
-nextcloud_configure_protonmail = true
-protonmail_username         = username
-protonmail_password         = '<password>'
-
-nextcloud_configure_mail    = true
-nextcloud_mail_from         = notifications 
-nextcloud_mail_smtpmode     = smtp
-nextcloud_mail_smtpauthtype = PLAIN
-nextcloud_mail_smtpsecure   = 
-nextcloud_mail_smtpauth     = 1
-nextcloud_mail_smtphost     = protonmail
-nextcloud_mail_smtpport     = 1025
-nextcloud_mail_smtpname     = eric.newbury
-```
-
-Setup S3 Buckets as [primary storage](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html)
-
-Create a AWS user with permission to accces the S3 bucket. 
-Provide your AWS Key and Secret below. The default bucket name is: 'nextcloud-{{ cloud_server_fqdn }}'.
-
-This only works on the initial run of the playbook. **If a file config.php exists already it won't be changed.** This will not migrate an existing Nextcloud installation to a S3 bucket.
-
-```ini
-# Use S3 Bucket as primary storage
-aws_s3_key            = 'keyXXXXXXXXXXXXXXXX'
-aws_s3_secret         = 'secretXXXXXXXXXXXXXXXXXXXX'
-aws_s3_bucket_name    = 'nextcloud-nextcloud.example.tld'
-aws_s3_hostname       = 's3.amazonaws.com'
-aws_s3_port           = '443'
-aws_s3_use_ssl        = 'true'
-aws_s3_region         = 'us-east-1'
-aws_s3_use_path_style = 'true'
-```
 
 Setup the [restic](https://restic.readthedocs.io/en/latest/) backup tool.
 ```ini
@@ -138,14 +88,6 @@ If using rclone with backblaze, include these variables
 ```
 b2_account                  = 
 b2_key                      =
-```
-
-This playbook even supports the integration with an online office suite! You can choose between [Collabora](https://www.collaboraoffice.com/) and [ONLYOFFICE](https://www.onlyoffice.com).
-```ini
-# Choose an online office suite to integrate with your Nextcloud. Your options are (without quotation marks): 'none', 'collabora' and 'onlyoffice'.
-online_office               = none
-# When using Collabora, you're able to install dictionaries alongside with it. Collabora's default is German (de).
-# collabora_dictionaries    = 'en'            # Separate ISO 639-1 codes with a space.
 ```
 
 If you want to use fulltext search.  
@@ -205,7 +147,7 @@ ok: [localhost] => {
 If you are in a hurry you can set the inventory variables on the cli. But remember if you run the playbook again without the -e options all default values will apply and your systems is likely to be broken.
 
 ```bash
-./cloud.yml -e "cloud_server_fqdn=nextcloud.example.tld cloud_db_type=mysql"
+./cloud.yml -e "cloud_server_fqdn=nextcloud.example.tld"
 ```
 
 ## Expert setup

@@ -13,15 +13,22 @@
   include_tasks: dockerproxy.yml
 
 - name: docker traefik
-  include_tasks: traefik.yml
+  include_tasks:
+    file: traefik.yml
+    apply:
+      tags: traefik
+  tags: traefik
 
 - name: docker portainer
   include_tasks: portainer.yml
   when: portainer_enabled|bool
 
-- name: docker database
-  include_tasks: database.yml
-  when: cloud_db_type != 'sqlite'
+- name: docker postgres
+  include_tasks:
+    file: postgres.yml
+    apply:
+      tags: postgres
+  tags: postgres
 
 - name: docker redis
   include_tasks: redis.yml
@@ -30,20 +37,13 @@
   include_tasks: adminer.yml
   when:
     - adminer_enabled|bool
-    - cloud_db_type != 'sqlite'
 
 - name: docker nextcloud
   include_tasks: nextcloud.yml
 
 - name: docker onlyoffice
   include_tasks: onlyoffice.yml
-  when: online_office == 'onlyoffice'
-
-- name: docker collabora office
-  include_tasks: collabora.yml
-  when:
-    - online_office == 'collabora'
-    - ansible_architecture == 'x86_64'
+  tags: onlyoffice
 
 - name: docker nginx
   include_tasks: nginx.yml
@@ -65,13 +65,9 @@
   when:
     - fulltextsearch_enabled|bool
 
-- name: docker protonmail bridge
-  include_tasks: protonmail.yml
-  when:
-    - nextcloud_configure_protonmail|bool
-
 - name: docker synapse
   include_tasks: synapse.yml
+  tags: synapse
 
 - name: matrix registration
   include_tasks: matrix-registration.yml
@@ -83,7 +79,7 @@
   include_tasks: wireguard.yml
 
 - name: docker photoprism
-  include_tasks: 
+  include_tasks:
     file: photoprism.yml
     apply:
       tags: photos

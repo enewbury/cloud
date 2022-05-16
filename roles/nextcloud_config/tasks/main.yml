@@ -7,8 +7,8 @@
 - name: first setup nextcloud
   shell: >
     docker exec --user www-data nextcloud php occ  maintenance:install 
-    --database {{ cloud_db_type }} --database-host cloud-db --database-name {{ nextcloud_db_name }} 
-    --database-user {{ nextcloud_db_user }} --database-pass {{ nextcloud_db_passwd }} 
+    --database pgsql --database-host postgres --database-name nextcloud 
+    --database-user nextcloud --database-pass {{ db_nextcloud_pswd }} 
     --admin-user {{ nextcloud_admin }} --admin-pass {{ nextcloud_passwd }} --data-dir {{ nextcloud_container_data_dir }}
   when: ( not config_php.stat.exists )
   register: first_setup_nextcloud
@@ -24,17 +24,6 @@
       loop: "{{ nextcloud_mail_config }}"
       when:
         - nextcloud_configure_mail|bool
-
-    - name: set nextcloud mail config.php values
-      shell: "{{ docker_occ_cmd }} config:system:set {{ item }}"
-      loop: "{{ nextcloud_protonmail_config }}"
-      when:
-        - nextcloud_configure_protonmail|bool
-
-    - name: set nextcloud protonmail password config.php value
-      shell: "{{ docker_occ_cmd }} config:system:set mail_smtppassword --value='{{ protonmail_local_password }}'"
-      when:
-        - nextcloud_configure_protonmail|bool
 
     - name: install {{ item.name }} app
       shell: "{{ docker_occ_cmd }} app:install {{ item.name }}"
@@ -99,16 +88,9 @@
       when:
         - "'fpm' not in docker_nextcloud_image"
 
-- name: setup collabora app in nextcloud
-  include_tasks: configure_collabora.yml
-  when:
-    - online_office == 'collabora'
-    - ansible_architecture == 'x86_64'
-
 - name: setup onlyoffice app in nextcloud
   include_tasks: configure_onlyoffice.yml
   when:
-    - online_office == 'onlyoffice'
     - ansible_architecture == 'x86_64'
 
 - name: setup talk app in nextcloud

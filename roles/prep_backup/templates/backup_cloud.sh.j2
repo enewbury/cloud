@@ -15,11 +15,8 @@ trap "docker exec -u www-data nextcloud php occ maintenance:mode --off" EXIT
 # set nextcloud to maintenance mode
 docker exec -u www-data nextcloud php occ maintenance:mode --on
 
-{% if cloud_db_type == 'mysql' %}
-sudo docker exec cloud-db mysqldump --single-transaction -h localhost -u {{ nextcloud_db_user }} -p{{ nextcloud_db_passwd }} {{ nextcloud_db_name }} > {{ cloud_database_dump_dir }}/db_dump_{{ cloud_db_type }}_nextcloud.sql
-{% elif cloud_db_type == 'pgsql' %}
-sudo docker exec cloud-db pg_dump -c -U {{ nextcloud_db_user }} {{ nextcloud_db_name }} > {{ cloud_database_dump_dir }}/db_dump_{{ cloud_db_type }}_nextcloud.sql
-{% endif %}
+sudo docker exec postgres pg_dump -c -U postgres nextcloud > {{ cloud_database_dump_dir }}/postgres_dump_nextcloud.sql
+sudo docker exec postgres pg_dump -c -U postgres synapse > {{ cloud_database_dump_dir }}/postgres_dump_synapse.sql
 
 # backup the data dir
 {{ restic_install_path }}/restic backup --verbose {{ cloud_base_dir }}
