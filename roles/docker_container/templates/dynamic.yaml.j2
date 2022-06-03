@@ -19,16 +19,6 @@ http:
         permanent: true
         regex: "https://{{ cloud_server_fqdn }}/.well-known/matrix"
         replacement: "https://matrix.{{ cloud_server_fqdn }}/.well-known/matrix"
-    nextcloud-redirect:
-      redirectregex:
-        permanent: true
-        regex: "https://(.*)/.well-known/(card|cal)dav"
-        replacement: "https://$1/remote.php/dav"
-    nextcloud-webfinger:
-      redirectregex:
-        permanent: true
-        regex: "https://([^/])/.well-known/(webfinger|nodeinfo)"
-        replacement: "https://$1/index.php/.well-known/$2"
     onlyoffice:
       headers:
         customRequestHeaders:
