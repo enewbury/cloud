@@ -41,3 +41,12 @@
       com.centurylinklabs.watchtower.enable: "true"
 
     state: '{{ state | default("started") }}'
+
+
+- name: cron photoprims scan
+  cron:
+    name: "scan for new photos"
+    day: "*"
+    minute: "0"
+    hour: "8"
+    job: "docker exec photoprism photoprism index --cleanup > /var/log/photoprism-index.log 2>&1"
