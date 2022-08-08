@@ -8,14 +8,6 @@
     group: "{{ ansible_env.SUDO_USER | default('root') }}"
     state: directory
 
-- name: make sure {{ local_credential_store }} is present
-  file:
-    name: "{{ local_credential_store }}"
-    owner: "{{ ansible_env.SUDO_USER | default('root') }}"
-    group: "{{ ansible_env.SUDO_USER | default('root') }}"
-    mode: 0700
-    state: directory
-
 - name: make sure nextcloud directories are present
   file:
     name: "{{ item.name }}"

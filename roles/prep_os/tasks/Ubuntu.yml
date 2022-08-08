@@ -22,4 +22,5 @@
       - gnupg2
       - python3-passlib
       - python3-bcrypt
+      - python3-pip
     state: latest

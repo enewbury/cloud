@@ -17,8 +17,8 @@
   file:
     name: '{{ cloud_database_dump_dir }}'
     owner: root
-    group: root
-    mode: 0700
+    group: 999
+    mode: 0750
     state: directory
 
 - name: postgres | copy db initialization script
@@ -46,6 +46,7 @@
       POSTGRES_MULTIPLE_DATABASES: "nextcloud:{{ db_nextcloud_pswd }},synapse:{{ db_synapse_pswd }}:C"
     volumes: 
       - "{{ cloud_base_dir }}/db-initialization:/docker-entrypoint-initdb.d"
+      - "{{cloud_base_dir}}/database-dump:/dump"
       - "postgres-14-vol:/var/lib/postgresql/data:rw"
     networks:
       - name: backend

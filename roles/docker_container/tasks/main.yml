@@ -52,7 +52,6 @@
 - name: docker turnserver
   include_tasks: turnserver.yml
   when:
-    - talk_install|bool
     - (ansible_architecture == 'x86_64' or ansible_architecture == 'aarch64')
 
 - name: docker elasticsearch_tesseract
