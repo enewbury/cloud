@@ -43,7 +43,7 @@
     env:
       POSTGRES_PASSWORD: "{{ db_admin_pswd}}"
       PGDATA:            /var/lib/postgresql/data
-      POSTGRES_MULTIPLE_DATABASES: "nextcloud:{{ db_nextcloud_pswd }},synapse:{{ db_synapse_pswd }}:C"
+      POSTGRES_MULTIPLE_DATABASES: "nextcloud:{{ db_nextcloud_pswd }},synapse:{{ db_synapse_pswd }}:C,fb_bridge:{{ fb_bridge_db_pswd }}"
     volumes: 
       - "{{ cloud_base_dir }}/db-initialization:/docker-entrypoint-initdb.d"
       - "{{cloud_base_dir}}/database-dump:/dump"

@@ -42,14 +42,6 @@
         group: "root",
       }
 
-- name: make sure synapse dir exists
-  file:
-    name: "{{ cloud_base_dir }}/synapse"
-    owner: 991
-    group: 991
-    mode: 0750
-    state: directory
-
 - name: selinux targets
   sefcontext:
     target: "{{ item }}"

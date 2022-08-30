@@ -14,11 +14,6 @@ http:
         browserXSSFilter: true
         contentTypeNosniff: true
         customFrameOptionsValue: "SAMEORIGIN"
-    matrix-redirect:
-      redirectregex:
-        permanent: true
-        regex: "https://{{ cloud_server_fqdn }}/.well-known/matrix"
-        replacement: "https://matrix.{{ cloud_server_fqdn }}/.well-known/matrix"
     onlyoffice:
       headers:
         customRequestHeaders:

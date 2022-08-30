@@ -1,5 +1,13 @@
 ---
 
+- name: make sure synapse dir exists
+  file:
+    name: "{{ cloud_base_dir }}/synapse"
+    owner: 991
+    group: 991
+    mode: 0750
+    state: directory
+
 - name: adding homeserver.yaml file
   template:
     src: homeserver.yaml.j2
@@ -26,6 +34,36 @@
 
     volumes:
       - "{{ cloud_base_dir }}/synapse:/data"
+      - "{{ cloud_base_dir }}/fb-bridge/registration.yaml:/data/fb-bridge.yaml"
     state: "{{ state | default('started') }}"
   tags: synapse
+    
+- name: make sure fb-bridge dir exists
+  file:
+    name: "{{ cloud_base_dir }}/fb-bridge"
+    owner: 1337
+    group: 1337
+    mode: 0755
+    state: directory
 
+- name: adding fb-bridge config file
+  template:
+    src: fb-bridge-config.yaml.j2
+    dest: "{{ cloud_base_dir }}/fb-bridge/config.yaml"
+    owner: 1337
+    group: 1337
+  tags: synapse
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} fb-bridge container"
+  docker_container:
+    name: fb-bridge
+    image: dock.mau.dev/mautrix/facebook:latest 
+    restart_policy: always
+    networks:
+      - name: backend
+    networks_cli_compatible: true
+    volumes:
+      - "{{ cloud_base_dir }}/fb-bridge:/data"
+    labels:
+      com.centurylinklabs.watchtower.enable:         "true"
+    state: "{{ state | default('started') }}"

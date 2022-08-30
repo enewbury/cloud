@@ -1,0 +1,39 @@
+---
+
+- name: ensures ntfy config dir exists
+  file:
+    path: "{{ cloud_base_dir }}/ntfy"
+    state: directory
+    owner: root
+    group: root
+  tags: ntfy
+
+- name: adding element-config.json file
+  template:
+    src: ntfy-server-config.yml.j2
+    dest: "{{ cloud_base_dir }}/ntfy/server.yml"
+    owner: root
+    group: root
+  tags: ntfy
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the ntfy container"
+  docker_container:
+    name: ntfy
+    image: "binwiederhier/ntfy"
+    command: serve
+    restart_policy: unless-stopped
+    networks:
+      - name: backend
+    networks_cli_compatible: true
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ntfy.entrypoints: "web-secure"      
+      traefik.http.routers.ntfy.rule: "Host(`ntfy.{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.ntfy.service: ntfy
+      traefik.http.services.ntfy.loadbalancer.server.port: "80"
+      com.centurylinklabs.watchtower.enable: "true"
+    volumes:
+      - "{{ cloud_base_dir }}/ntfy:/etc/ntfy"
+    state: "{{ state | default('started') }}"
+  tags: ntfy
+

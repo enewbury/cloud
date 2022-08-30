@@ -46,7 +46,10 @@
   tags: onlyoffice
 
 - name: docker nginx
-  include_tasks: nginx.yml
+  include_tasks: 
+    file: nginx.yml
+    apply:
+      tags: nginx
   when: "'fpm' in docker_nextcloud_image"
 
 - name: docker turnserver
@@ -73,6 +76,10 @@
 
 - name: docker element
   include_tasks: element.yml
+
+- name: docker ntfy
+  include_tasks: ntfy.yml
+  tags: ntfy
 
 - name: docker wireguard
   include_tasks: wireguard.yml

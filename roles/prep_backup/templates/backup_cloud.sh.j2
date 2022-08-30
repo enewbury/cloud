@@ -10,13 +10,14 @@ set -e
 {{ restic_install_path }}/restic unlock --cleanup-cache
 
 # Make sure nextcloud is enabled when we are done
-trap "docker exec -u www-data nextcloud php occ maintenance:mode --off" EXIT
+trap "docker exec -u www-data nextcloud php occ maintenance:mode --off && curl -H tag:warning -H p:low -u admin:{{ ntfy_alerts_pswd }} -d \"Cloud backup failed\" https://ntfy.***REMOVED***/alerts" EXIT
 
 # set nextcloud to maintenance mode
 docker exec -u www-data nextcloud php occ maintenance:mode --on
 
 sudo docker exec postgres pg_dump -c -U postgres nextcloud > {{ cloud_database_dump_dir }}/postgres_dump_nextcloud.sql
 sudo docker exec postgres pg_dump -c -U postgres synapse > {{ cloud_database_dump_dir }}/postgres_dump_synapse.sql
+sudo docker exec postgres pg_dump -c -U postgres mautrix_facebook > {{ cloud_database_dump_dir }}/postgres_dump_mautrix_facebook.sql
 
 # backup the data dir
 {{ restic_install_path }}/restic backup --verbose {{ cloud_base_dir }}

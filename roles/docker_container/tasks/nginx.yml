@@ -8,6 +8,7 @@
     owner: "root"
     group: "root"
     mode: 0644
+  tags: nginx
 
 - name: copy nginx.conf
   template:
@@ -16,6 +17,7 @@
     owner: "root"
     group: "root"
     mode: 0644
+  tags: nginx
 
 - name: copy static matrix client
   template:
@@ -23,6 +25,7 @@
     dest: "{{ cloud_nginx_dir }}/static/matrix/client.json"
     owner: "root"
     group: "root"
+  tags: nginx
 
 - name: copy static matrix server
   template:
@@ -30,6 +33,7 @@
     dest: "{{ cloud_nginx_dir }}/static/matrix/server.json"
     owner: "root"
     group: "root"
+  tags: nginx
 
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the nginx container"
   docker_container:
@@ -49,7 +53,7 @@
       traefik.enable: "true"
       traefik.http.routers.nginx.entrypoints: "web-secure"
       traefik.http.routers.nginx.rule: "Host(`{{ cloud_server_fqdn }}`)"
-      traefik.http.routers.nginx.middlewares: "nextcloud@file,matrix-redirect@file"
+      traefik.http.routers.nginx.middlewares: "nextcloud@file"
       traefik.http.routers.nginx.service: "nginx"
       traefik.http.services.nginx.loadbalancer.server.port: "80"
       com.centurylinklabs.watchtower.enable: "true"
@@ -60,3 +64,4 @@
       retries: 5
     state: "{{ state | default('started') }}"
   register: docker_result
+  tags: nginx

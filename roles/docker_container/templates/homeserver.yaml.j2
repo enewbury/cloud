@@ -552,11 +552,11 @@ retention:
 # instance, if using certbot, use `fullchain.pem` as your certificate,
 # not `cert.pem`).
 #
-#tls_certificate_path: "/data/***REMOVED***.tls.crt"
+#tls_certificate_path: "/data/example.com.tls.crt"
 
 # PEM-encoded private key for TLS
 #
-#tls_private_key_path: "/data/***REMOVED***.tls.key"
+#tls_private_key_path: "/data/example.com.tls.key"
 
 # Whether to verify TLS server certificates for outbound federation requests.
 #
@@ -837,7 +837,7 @@ database:
 # A yaml python logging config file as described by
 # https://docs.python.org/3.7/library/logging.config.html#configuration-dictionary-schema
 #
-log_config: "/data/***REMOVED***.log.config"
+log_config: "/data/{{ cloud_server_fqdn }}.log.config"
 
 ## Ratelimiting ##
 
@@ -1525,8 +1525,8 @@ room_prejoin_state:
 
 # A list of application service config files to use
 #
-#app_service_config_files:
-#  - app_service_1.yaml
+app_service_config_files:
+  - /data/fb-bridge.yaml
 #  - app_service_2.yaml
 
 # Uncomment to enable tracking of application service IP addresses. Implicitly
@@ -1538,19 +1538,19 @@ room_prejoin_state:
 # the registration_shared_secret is used, if one is given; otherwise,
 # a secret key is derived from the signing key.
 #
-macaroon_secret_key: ":PAcFvZ~@y2aCP2F9q-^2GDNGRcA=R~mDcBGA8MoeWR^+aUDs="
+macaroon_secret_key: "{{ macaroon_secret_key }}"
 
 # a secret which is used to calculate HMACs for form values, to stop
 # falsification of values. Must be specified for the User Consent
 # forms to work.
 #
-form_secret: "ym@^o:BllXz-3@#BsYj1U;aw-W-d&m^ov;+2k~7J-tdLY2PSyB"
+form_secret: "{{ synapse_form_secret }}"
 
 ## Signing Keys ##
 
 # Path to the signing key to sign messages with
 #
-signing_key_path: "/data/***REMOVED***.signing.key"
+signing_key_path: "/data/{{ cloud_server_fqdn }}.signing.key"
 
 # The keys that the server used to sign messages with but won't use
 # to sign new messages.
