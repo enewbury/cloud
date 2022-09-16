@@ -16,6 +16,19 @@
     group: 991
   tags: synapse
 
+- name: Download matrix-synapse-shared-secret-auth
+  get_url:
+    url: "https://raw.githubusercontent.com/devture/matrix-synapse-shared-secret-auth/2.0.2/shared_secret_authenticator.py" 
+    dest: "{{ cloud_base_dir }}/synapse/shared_secret_authenticator.py"
+    force: true
+    mode: 0440
+    owner: 991
+    group: 991
+  register: result
+  retries: 5
+  delay: 10
+  until: result is not failed
+
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the matrix container"
   docker_container:
     name: synapse
@@ -35,8 +48,10 @@
     volumes:
       - "{{ cloud_base_dir }}/synapse:/data"
       - "{{ cloud_base_dir }}/fb-bridge/registration.yaml:/data/fb-bridge.yaml"
+      - "{{ cloud_base_dir }}/synapse/shared_secret_authenticator.py:/usr/local/lib/python3.9/site-packages/shared_secret_authenticator.py"
     state: "{{ state | default('started') }}"
   tags: synapse
+
     
 - name: make sure fb-bridge dir exists
   file:
