@@ -2,7 +2,7 @@
 
 100% Handsfree & Ready to login.
 
-This playbook allows you to integrate with a protonmail server, and uses Nginx instead of apache.
+This playbook uses Nginx instead of apache.
 
 ## Preparation
 

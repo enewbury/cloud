@@ -18,7 +18,7 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "US/Eastern"
-      SERVERURL: "***REMOVED***"
+      SERVERURL: "{{ cloud_server_fqdn }}"
       PEERS: "mac,phone"
     ports:
       - "51820:51820/udp"

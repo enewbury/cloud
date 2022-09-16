@@ -10,7 +10,7 @@ set -e
 {{ restic_install_path }}/restic unlock --cleanup-cache
 
 # Make sure nextcloud is enabled when we are done
-trap "docker exec -u www-data nextcloud php occ maintenance:mode --off && curl -H tag:warning -H p:low -u admin:{{ ntfy_alerts_pswd }} -d \"Cloud backup failed\" https://ntfy.***REMOVED***/alerts" EXIT
+trap "docker exec -u www-data nextcloud php occ maintenance:mode --off && curl -H tag:warning -H p:low -u admin:{{ ntfy_alerts_pswd }} -d \"Cloud backup failed\" https://ntfy.{{ cloud_server_fqdn }}/alerts" EXIT
 
 # set nextcloud to maintenance mode
 docker exec -u www-data nextcloud php occ maintenance:mode --on

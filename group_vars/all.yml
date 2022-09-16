@@ -13,8 +13,6 @@ traefik_config_dir: "{{ cloud_base_dir }}/traefik"
 
 portainer_data_dir: "portainer-data-vol"
 
-protonmail_docker_dir: "{{ cloud_base_dir }}/protonmail"
-
 nextcloud_container_data_dir: /var/nc-data
 
 docker_postgres_image: 11-alpine
