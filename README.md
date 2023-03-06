@@ -2,8 +2,6 @@
 
 100% Handsfree & Ready to login.
 
-This playbook uses Nginx instead of apache.
-
 ## Preparation
 
 Install [Ansible](https://www.ansible.com/) on your dev machine

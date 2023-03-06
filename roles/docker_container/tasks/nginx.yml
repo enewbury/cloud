@@ -1,15 +1,6 @@
 ---
 # tasks file to start nginx container
 
-- name: copy uploadsize.conf to {{ nextcloud_config_dir }}
-  copy:
-    src: "uploadsize.conf"
-    dest: "{{ cloud_nginx_dir }}/uploadsize.conf"
-    owner: "root"
-    group: "root"
-    mode: 0644
-  tags: nginx
-
 - name: copy nginx.conf
   template:
     src: "nginx.conf.j2"
@@ -52,16 +43,16 @@
     labels:
       traefik.enable: "true"
       traefik.http.routers.nginx.entrypoints: "web-secure"
-      traefik.http.routers.nginx.rule: "Host(`{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.nginx.rule: "Host(`{{ cloud_server_fqdn }}`) && PathPrefix(`/.well-known/matrix`)"
       traefik.http.routers.nginx.middlewares: "nextcloud@file"
       traefik.http.routers.nginx.service: "nginx"
       traefik.http.services.nginx.loadbalancer.server.port: "80"
       com.centurylinklabs.watchtower.enable: "true"
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://nginx/status.php || exit 1"]
-      interval: 20s
-      timeout: 10s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl --fail http://nginx/status.php || exit 1"]
+    #   interval: 20s
+    #   timeout: 10s
+    #   retries: 5
     state: "{{ state | default('started') }}"
   register: docker_result
   tags: nginx

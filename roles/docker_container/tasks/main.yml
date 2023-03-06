@@ -50,7 +50,6 @@
     file: nginx.yml
     apply:
       tags: nginx
-  when: "'fpm' in docker_nextcloud_image"
 
 - name: docker turnserver
   include_tasks: turnserver.yml

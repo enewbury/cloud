@@ -19,11 +19,11 @@
       shell: "{{ docker_occ_cmd }} config:system:set {{ item }}"
       loop: "{{ nextcloud_system_config }}"
 
-    - name: set nextcloud mail config.php values
-      shell: "{{ docker_occ_cmd }} config:system:set {{ item }}"
-      loop: "{{ nextcloud_mail_config }}"
-      when:
-        - nextcloud_configure_mail|bool
+    # - name: set nextcloud mail config.php values
+    #   shell: "{{ docker_occ_cmd }} config:system:set {{ item }}"
+    #   loop: "{{ nextcloud_mail_config }}"
+    #   when:
+    #     - nextcloud_configure_mail|bool
 
     - name: install {{ item.name }} app
       shell: "{{ docker_occ_cmd }} app:install {{ item.name }}"
@@ -78,15 +78,11 @@
 
 - name: modify .htaccess for card and cal dev
   block:
-    - name: modifying /opt/nextcloud/www/.htaccess
-      shell: sed -i 's+/remote.php/dav/+https://{{ cloud_server_fqdn }}/remote.php/dav/+g' /opt/nextcloud/www/.htaccess
-      when:
-        - "'fpm' not in docker_nextcloud_image"
+    - name: modifying /opt/cloud/nextcloud/www/.htaccess
+      shell: sed -i 's+/remote.php/dav/+https://{{ cloud_server_fqdn }}/remote.php/dav/+g' {{ nextcloud_www_dir }}/.htaccess
 
     - name: updating maintenance htaccess
       shell: "{{ docker_occ_cmd }} maintenance:update:htaccess"
-      when:
-        - "'fpm' not in docker_nextcloud_image"
 
 - name: setup onlyoffice app in nextcloud
   include_tasks: configure_onlyoffice.yml

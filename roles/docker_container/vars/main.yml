@@ -1,21 +1,5 @@
 ---
-# vars file for docker_container
-
-nextcloud_traefik_label:
-  nginx:
-    traefik.enable: "false"
-    com.centurylinklabs.watchtower.enable: "true"
-    com.centurylinklabs.watchtower.depends-on: "nginx,redis,cloud-db"
-
-  apache:
-    traefik.enable: "true"
-    traefik.http.routers.cloud.entrypoints: "web-secure"
-    traefik.http.routers.cloud.rule: "Host(`{{ cloud_server_fqdn }}`)"
-    traefik.http.routers.cloud.middlewares: "nextcloud@file"
-    traefik.http.routers.nginx.service: "cloud"
-    traefik.http.services.nginx.loadbalancer.server.port: "80"
-    com.centurylinklabs.watchtower.enable: "true"
-    com.centurylinklabs.watchtower.depends-on: "redis,cloud-db"
+# vars file for docker_containers
 
 service_path:
   CentOS: "/usr/lib/systemd/system"

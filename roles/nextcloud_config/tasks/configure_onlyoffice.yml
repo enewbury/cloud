@@ -16,7 +16,7 @@
   loop:
     - 'onlyoffice DocumentServerUrl --value="https://office.{{ cloud_server_fqdn }}"'
     - 'onlyoffice DocumentServerInternalUrl --value="http://onlyoffice/"'
-    - 'onlyoffice StorageUrl --value="http://nginx/"'
+    - 'onlyoffice StorageUrl --value="http://nextcloud/"'
     - 'onlyoffice secret --value="{{ onlyoffice_secret }}"'
     - 'allow_local_remote_servers  --value=true'
   when: install_onlyoffice_app is changed

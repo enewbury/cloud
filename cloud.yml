@@ -15,6 +15,7 @@
     - {
         role: nextcloud_config,
         when: (state is undefined or 'absent' not in state),
+        tags: nextcloud_config
       }
     - { role: prep_backup, when: restic_repo != '' }
     - { role: do_dynamic_dns, when: configure_do_dynamic_dns|bool }

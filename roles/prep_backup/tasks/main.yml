@@ -32,7 +32,7 @@
   environment:
     RESTIC_REPOSITORY: "{{ restic_repo }}"
     RESTIC_PASSWORD: "{{ restic_backup_secret }}"
-  no_log: true
+  # no_log: true
   register: restic_init
   changed_when: "'created restic backend' in restic_init.stdout"
   failed_when:

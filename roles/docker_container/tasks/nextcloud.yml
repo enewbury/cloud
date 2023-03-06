@@ -28,7 +28,14 @@
       - "{{ nextcloud_data_dir }}:{{ nextcloud_container_data_dir }}"
       - "{{ nextcloud_config_dir }}/php.ini:/usr/local/etc/php/php.ini"
     labels:
-      "{{ nextcloud_traefik_label['nginx' if ( 'fpm' in docker_nextcloud_image ) else 'apache'] }}"
+      traefik.enable: "true"
+      traefik.http.routers.cloud.entrypoints: "web-secure"
+      traefik.http.routers.cloud.rule: "Host(`{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.cloud.middlewares: "nextcloud@file"
+      traefik.http.routers.cloud.service: "cloud"
+      traefik.http.services.cloud.loadbalancer.server.port: "80"
+      com.centurylinklabs.watchtower.enable: "true"
+      com.centurylinklabs.watchtower.depends-on: "redis,cloud-db"
     state: "{{ state | default('started') }}"
   register: docker_result
     
