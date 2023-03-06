@@ -13,6 +13,10 @@
   set_fact:
     db_synapse_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_synapse_password chars=ascii_letters,digits length=32') }}"
 
+- name : postgres | generate bridge db password
+  set_fact:
+    fb_bridge_db_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_fb_bridge_password chars=ascii_letters,digits length=32') }}"
+
 - name: postgres | create data dump directory
   file:
     name: '{{ cloud_database_dump_dir }}'

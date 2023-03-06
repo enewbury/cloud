@@ -81,8 +81,10 @@
   include_tasks: ntfy.yml
   tags: ntfy
 
-- name: docker wireguard
-  include_tasks: wireguard.yml
+- block:
+  - name: docker wireguard
+    include_tasks: wireguard.yml
+  tags: wireguard
 
 - name: docker photoprism
   include_tasks:

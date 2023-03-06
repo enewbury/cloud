@@ -20,6 +20,7 @@
       TZ: "US/Eastern"
       SERVERURL: "{{ cloud_server_fqdn }}"
       PEERS: "mac,phone"
+      INTERNAL_SUBNET: "{{ ansible_default_ipv4.address }}"
     ports:
       - "51820:51820/udp"
     sysctls:
