@@ -15,27 +15,7 @@
 
   - name : synapse | load bridge db password
     set_fact:
-      fb_bridge_db_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_fb_bridge_password') }}"
-
-  - name : synapse | load bridge shared secret password
-    set_fact:
-      fb_bridge_shared_secret: "{{ lookup('password', '{{ local_credential_store }}/fb_bridge_shared_secret') }}"
-
-  - name : synapse | load bridge as token password
-    set_fact:
-      fb_bridge_as_token: "{{ lookup('password', '{{ local_credential_store }}/fb_bridge_as_token') }}"
-
-  - name : synapse | load bridge hs token password
-    set_fact:
-      fb_bridge_hs_token: "{{ lookup('password', '{{ local_credential_store }}/fb_bridge_hs_token') }}"
-
-  - name : synapse | load fb bridge device seed 
-    set_fact:
-      auth_shared_secret: "{{ lookup('password', '{{ local_credential_store }}/fb_bridge_device_seed') }}"
-
-  - name : synapse | load shared secret auth key
-    set_fact:
-      fb_bridge_device_seed: "{{ lookup('password', '{{ local_credential_store }}/synapse_shared_secret_auth_key') }}"
+      db_fb_bridge_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_fb_bridge_password') }}"
 
   - name: make sure synapse dir exists
     file:
@@ -52,18 +32,43 @@
       owner: 991
       group: 991
 
-  - name: Download matrix-synapse-shared-secret-auth
-    get_url:
-      url: "https://raw.githubusercontent.com/devture/matrix-synapse-shared-secret-auth/2.0.2/shared_secret_authenticator.py" 
-      dest: "{{ cloud_base_dir }}/synapse/shared_secret_authenticator.py"
-      force: true
-      mode: 0440
+  - name: adding puppet-bridge registration file
+    template:
+      src: puppet-registration.yaml.j2
+      dest: "{{ cloud_base_dir }}/synapse/puppet.yaml"
       owner: 991
       group: 991
-    register: result
-    retries: 5
-    delay: 10
-    until: result is not failed
+
+  - name: make sure fb-bridge dir exists
+    file:
+      name: "{{ cloud_base_dir }}/fb-bridge"
+      owner: 1337
+      group: 1337
+      mode: 0755
+      state: directory
+
+  - name: adding fb-bridge config file
+    template:
+      src: fb-bridge-config.yaml.j2
+      dest: "{{ cloud_base_dir }}/fb-bridge/config.yaml"
+      owner: 1337
+      group: 1337
+
+  - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} fb-bridge container"
+    docker_container:
+      name: fb-bridge
+      image: dock.mau.dev/mautrix/meta:latest 
+      restart_policy: always
+      networks:
+        - name: backend
+      networks_cli_compatible: true
+      volumes:
+        - "{{ cloud_base_dir }}/fb-bridge:/data"
+      labels:
+        com.centurylinklabs.watchtower.enable:         "true"
+      state: "{{ state | default('started') }}"
+
+  # - Move registration file to snapse
 
   - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the matrix container"
     docker_container:
@@ -83,36 +88,6 @@
 
       volumes:
         - "{{ cloud_base_dir }}/synapse:/data"
-        - "{{ cloud_base_dir }}/fb-bridge/registration.yaml:/data/fb-bridge.yaml"
-        - "{{ cloud_base_dir }}/synapse/shared_secret_authenticator.py:/usr/local/lib/python3.11/site-packages/shared_secret_authenticator.py"
-      state: "{{ state | default('started') }}"
-      
-  - name: make sure fb-bridge dir exists
-    file:
-      name: "{{ cloud_base_dir }}/fb-bridge"
-      owner: 1337
-      group: 1337
-      mode: 0755
-      state: directory
-
-  - name: adding fb-bridge config file
-    template:
-      src: fb-bridge-config.yaml.j2
-      dest: "{{ cloud_base_dir }}/fb-bridge/config.yaml"
-      owner: 1337
-      group: 1337
-
-  - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} fb-bridge container"
-    docker_container:
-      name: fb-bridge
-      image: dock.mau.dev/mautrix/facebook:latest 
-      restart_policy: always
-      networks:
-        - name: backend
-      networks_cli_compatible: true
-      volumes:
-        - "{{ cloud_base_dir }}/fb-bridge:/data"
-      labels:
-        com.centurylinklabs.watchtower.enable:         "true"
+        # - "{{ cloud_base_dir }}/fb-bridge/registration.yaml:/data/fb-bridge.yaml"
       state: "{{ state | default('started') }}"
   tags: synapse

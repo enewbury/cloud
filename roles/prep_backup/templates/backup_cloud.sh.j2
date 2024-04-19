@@ -17,7 +17,7 @@ docker exec -u www-data nextcloud php occ maintenance:mode --on
 
 sudo docker exec postgres pg_dump -c -U postgres nextcloud > {{ cloud_database_dump_dir }}/postgres_dump_nextcloud.sql
 sudo docker exec postgres pg_dump -c -U postgres synapse > {{ cloud_database_dump_dir }}/postgres_dump_synapse.sql
-sudo docker exec postgres pg_dump -c -U postgres mautrix_facebook > {{ cloud_database_dump_dir }}/postgres_dump_mautrix_facebook.sql
+sudo docker exec postgres pg_dump -c -U postgres fb_bridge > {{ cloud_database_dump_dir }}/postgres_dump_fb_bridge.sql
 
 # backup the data dir
 {{ restic_install_path }}/restic backup --verbose {{ cloud_base_dir }}

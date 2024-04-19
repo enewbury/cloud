@@ -1,0 +1,10 @@
+id: doublepuppet
+url:
+as_token: {{ lookup('password', '{{ local_credential_store}}/puppet_as_token chars=ascii_letters,digits length=64') }}
+hs_token: "unused"
+sender_localpart: "unused"
+rate_limited: false
+namespaces:
+  users:
+  - regex: '@.*:{{ cloud_server_fqdn | replace(".", "\.") }}'
+    exclusive: false
