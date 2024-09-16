@@ -80,7 +80,7 @@ password_config:
   policy:
 ui_auth:
 email:
-  smtp_host: {{ nextcloud_mail_domain }}
+  smtp_host: {{ nextcloud_mail_smtphost }}
   smtp_port: {{ nextcloud_mail_smtpport }}
   smtp_user: "{{ nextcloud_mail_smtpname }}"
   smtp_pass: "{{ nextcloud_mail_smtppwd }}"
