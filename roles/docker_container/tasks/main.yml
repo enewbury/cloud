@@ -2,76 +2,79 @@
 # tasks file for docker_container
 # start all needed container
 
-- name: docker network
+- name: docker | network
   include_tasks: network.yml
   when: state is undefined or 'absent' not in state
 
-- name: docker watchtower
+- name: docker | watchtower
   include_tasks: watchtower.yml
 
-- name: docker dockerproxy
+- name: docker | dockerproxy
   include_tasks: dockerproxy.yml
 
-- name: docker traefik
+- name: docker | traefik
   include_tasks:
     file: traefik.yml
     apply:
       tags: traefik
   tags: traefik
 
-- name: docker portainer
+- name: docker | portainer
   include_tasks: portainer.yml
   when: portainer_enabled|bool
 
-- name: docker postgres
+- name: docker | postgres
   include_tasks:
     file: postgres.yml
     apply:
       tags: postgres
   tags: postgres
 
-- name: docker redis
+- name: docker | redis
   include_tasks: redis.yml
 
-- name: docker nextcloud
+- name: docker | nextcloud
   include_tasks: nextcloud.yml
 
-- name: docker onlyoffice
+- name: docker | onlyoffice
   include_tasks: onlyoffice.yml
   tags: onlyoffice
 
-- name: docker nginx
+- name: docker | nginx
   include_tasks: 
     file: nginx.yml
     apply:
       tags: nginx
 
-- name: docker turnserver
+- name: docker | turnserver
   include_tasks: turnserver.yml
   when:
     - (ansible_architecture == 'x86_64' or ansible_architecture == 'aarch64')
 
-- name: docker synapse
+- name: docker | synapse
   include_tasks: synapse.yml
   tags: synapse
 
-- name: matrix registration
+- name: docker | matrix registration
   include_tasks: matrix-registration.yml
 
-- name: docker element
+- name: docker | element
   include_tasks: element.yml
 
-- name: docker ntfy
+- name: docker | ntfy
   include_tasks: ntfy.yml
   tags: ntfy
 
-- name: docker immich
+- name: docker | immich
   include_tasks:
     file: immich.yml
     apply:
       tags: immich
   tags: immich
 
-- name: docker network
-  include_tasks: network.yml
-  when: state is defined and 'absent' in state
+- name: docker | actual budget
+  include_tasks:
+    file: actual.yml
+    apply:
+      tags: actual
+  tags: actual

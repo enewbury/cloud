@@ -1,0 +1,55 @@
+---
+- name: ensures actual dir exists
+  file:
+    path: "{{ cloud_base_dir }}/actual_budget"
+    state: directory
+    owner: root
+    group: root
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the actual-budget container"
+  docker_container:
+    name: actual_budget
+    image: "actualbudget/actual-server:latest"
+    restart_policy: unless-stopped
+    networks:
+      - name: backend
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.actual.entrypoints: "web-secure"
+      traefik.http.routers.actual.rule: "Host(`budget.{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.actual.service: actual
+      traefik.http.services.actual.loadbalancer.server.port: "5006"
+      com.centurylinklabs.watchtower.enable: "true"
+
+    volumes:
+      - "{{ cloud_base_dir }}/actual_budget:/data"
+    state: "{{ state | default('started') }}"
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the actual-helpers container"
+  docker_container:
+    name: actual_helpers
+    image: "ghcr.io/psybers/actual-helpers"
+    restart_policy: unless-stopped
+    networks:
+      - name: backend
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+    env:
+      ACTUAL_SERVER_URL: "http://actual_budget:5006"
+      ACTUAL_SERVER_PASSWORD: "{{ actual.server_password }}"
+      ACTUAL_SYNC_ID: "{{ actual.sync_id }}"
+    state: "{{ state | default('started') }}"
+
+- name: cron sync bank update
+  cron:
+    name: "actual - sync bank"
+    minute: "30"
+    hour: "2"
+    job: "docker exec -t actual_helpers node sync-banks.js"
+
+- name: cron update inventment balances
+  cron:
+    name: "actual - track investmentws"
+    minute: "40"
+    hour: "2"
+    job: "docker exec -t actual_helpers node track-investments.js"
