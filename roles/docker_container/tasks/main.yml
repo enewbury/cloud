@@ -33,11 +33,6 @@
 - name: docker redis
   include_tasks: redis.yml
 
-- name: docker adminer
-  include_tasks: adminer.yml
-  when:
-    - adminer_enabled|bool
-
 - name: docker nextcloud
   include_tasks: nextcloud.yml
 
@@ -56,16 +51,6 @@
   when:
     - (ansible_architecture == 'x86_64' or ansible_architecture == 'aarch64')
 
-- name: docker elasticsearch_tesseract
-  include_tasks: elasticsearch.yml
-  when:
-    - fulltextsearch_enabled|bool
-
-- name: docker elasticsearch_tesseract
-  include_tasks: elasticsearch.yml
-  when:
-    - fulltextsearch_enabled|bool
-
 - name: docker synapse
   include_tasks: synapse.yml
   tags: synapse
@@ -80,17 +65,12 @@
   include_tasks: ntfy.yml
   tags: ntfy
 
-- block:
-  - name: docker wireguard
-    include_tasks: wireguard.yml
-  tags: wireguard
-
-- name: docker photoprism
+- name: docker immich
   include_tasks:
-    file: photoprism.yml
+    file: immich.yml
     apply:
-      tags: photos
-  tags: photos
+      tags: immich
+  tags: immich
 
 - name: docker network
   include_tasks: network.yml

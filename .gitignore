@@ -2,5 +2,5 @@
 .vscode/settings.json
 secrets
 secrets.tgz
-inventory.cfg
+.vault_pass
 cloud_server_secrets.zip

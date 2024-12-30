@@ -1,0 +1,86 @@
+
+---
+- name: ensures immich dir exists
+  file:
+    path: "{{ cloud_base_dir }}/immich"
+    state: directory
+    owner: root
+    group: root
+
+- name: 'immich | create postgres volume'
+  docker_volume:
+    name: 'immich-postgres-14-vol'
+    state: present
+
+- name: 'immich | create model cache volume'
+  docker_volume:
+    name: 'immich-model-cache'
+    state: present
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the immich postgres container"
+  docker_container:
+    name: immich_db
+    image: "docker.io/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:90724186f0a3517cf6914295b5ab410db9ce23190a2d9d0b9dd6463e3fa298f0"
+    restart_policy: unless-stopped
+    env:
+      POSTGRES_USER: immich
+      POSTGRES_PASSWORD: "{{ immich_db_pswd }}"
+      POSTGRES_DB: immich
+      POSTGRES_INITDB_ARGS: '--data-checksums'
+    networks:
+      - name: backend
+    networks_cli_compatible: true
+    volumes:
+      - "immich-postgres-14-vol:/var/lib/postgresql/data"
+    state: "{{ state | default('started') }}"
+    healthcheck:
+      test: >-
+        pg_isready --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" || exit 1;
+        Chksum="$$(psql --dbname="$${POSTGRES_DB}" --username="$${POSTGRES_USER}" --tuples-only --no-align
+        --command='SELECT COALESCE(SUM(checksum_failures), 0) FROM pg_stat_database')";
+        echo "checksum failure count is $$Chksum";
+        [ "$$Chksum" = '0' ] || exit 1
+      interval: 5m
+      start_interval: 30s
+      start_period: 5m
+    command: >-
+      postgres
+      -c shared_preload_libraries=vectors.so
+      -c 'search_path="$$user", public, vectors'
+      -c logging_collector=on
+      -c max_wal_size=2GB
+      -c shared_buffers=512MB
+      -c wal_compression=on
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the immich server container"
+  docker_container:
+    name: immich_server
+    image: "ghcr.io/immich-app/immich-server:{{ docker_immich_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ cloud_base_dir }}/immich:/usr/src/app/upload"
+      - /etc/localtime:/etc/localtime:ro
+    env:
+      DB_USERNAME: immich
+      DB_HOSTNAME: immich_db
+      DB_DATABASE_NAME: immich
+      DB_PASSWORD: "{{ immich_db_pswd }}"
+      REDIS_PASSWORD: "{{ redis_secret }}"
+    networks:
+      - name: backend
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.immich.entrypoints: "web-secure"      
+      traefik.http.routers.immich.rule: "Host(`photos.{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.immich.service: immich
+      traefik.http.services.immich.loadbalancer.server.port: "2283"
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the immich ML container"
+  docker_container:
+    name: immich_machine_learning
+    image: "ghcr.io/immich-app/immich-machine-learning:{{ docker_immich_image }}"
+    restart_policy: unless-stopped
+    volumes:
+      - "immich-model-cache:/cache"
+    networks:
+      - name: backend

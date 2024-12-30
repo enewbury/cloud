@@ -9,7 +9,7 @@
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the element container"
   docker_container:
     name: element
-    image: "vectorim/element-web"
+    image: "vectorim/element-web:latest"
     restart_policy: unless-stopped
     networks:
       - name: backend

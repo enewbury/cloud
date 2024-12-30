@@ -4,7 +4,7 @@ no-cli
 fingerprint
 external-ip={{ public_ip.ansible_facts.ipify_public_ip }}
 use-auth-secret
-static-auth-secret={{ lookup('password', '{{ local_credential_store }}/coturn_secret chars=ascii_letters,digits length=32') | lower }}
+static-auth-secret={{ coturn_secret }}
 realm=turn.{{ cloud_server_fqdn }}
 total-quota=100
 bps-capacity=0

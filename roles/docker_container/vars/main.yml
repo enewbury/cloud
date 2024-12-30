@@ -1,9 +1,2 @@
 ---
 # vars file for docker_containers
-
-service_path:
-  CentOS: "/usr/lib/systemd/system"
-  Fedora: "/usr/lib/systemd/system"
-  Amazon: "/usr/lib/systemd/system"
-  Ubuntu: "/lib/systemd/system"
-  Debian: "/lib/systemd/system"

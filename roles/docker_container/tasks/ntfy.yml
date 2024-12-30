@@ -19,7 +19,7 @@
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the ntfy container"
   docker_container:
     name: ntfy
-    image: "binwiederhier/ntfy"
+    image: "binwiederhier/ntfy:latest"
     command: serve
     restart_policy: unless-stopped
     networks:

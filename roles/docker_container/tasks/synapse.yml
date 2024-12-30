@@ -1,21 +1,9 @@
 ---
 
 - block:
-  - name: synapse | load synapse passwd
-    set_fact:
-      db_synapse_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_synapse_password') }}"
-
   - name: synapse | load macaroon secret key
     set_fact:
-      macaroon_secret_key: "{{ lookup('password', '{{ local_credential_store }}/macaroon_secret_key') }}"
-
-  - name: synapse | load form secret 
-    set_fact:
-      synapse_form_secret: "{{ lookup('password', '{{ local_credential_store }}/synapse_form_secret') }}"
-
-  - name : synapse | load bridge db password
-    set_fact:
-      db_fb_bridge_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_fb_bridge_password') }}"
+      macaroon_secret_key: "{{ synapse.macaroon_secret_key }}"
 
   - name: make sure synapse dir exists
     file:

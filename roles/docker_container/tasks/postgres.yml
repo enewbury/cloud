@@ -1,20 +1,4 @@
 ---
-- name: postgres | generate admin passwd
-  set_fact:
-    db_admin_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_admin_password chars=ascii_letters,digits length=32') }}"
-
-- name: postgres | generate nextcloud passwd
-  set_fact:
-    db_nextcloud_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_nextcloud_password chars=ascii_letters,digits length=32') }}"
-
-- name: postgres | generate synapse passwd
-  set_fact:
-    db_synapse_pswd: "{{ lookup('password', '{{ local_credential_store }}/database_synapse_password chars=ascii_letters,digits length=32') }}"
-
-- name: postgres | generate fb-bridge passwd
-  set_fact:
-    db_fb_bridge_pswd: "{{ lookup('password', '{{ local_credential_store }}/fb_bridge_password chars=ascii_letters,digits length=32') }}"
-
 - name: postgres | create data dump directory
   file:
     name: '{{ cloud_database_dump_dir }}'
@@ -43,9 +27,9 @@
     restart_policy: always
     tty: yes
     env:
-      POSTGRES_PASSWORD: "{{ db_admin_pswd}}"
+      POSTGRES_PASSWORD: "{{ postgres_admin_pswd}}"
       PGDATA:            /var/lib/postgresql/data
-      POSTGRES_MULTIPLE_DATABASES: "nextcloud:{{ db_nextcloud_pswd }},synapse:{{ db_synapse_pswd }}:C,fb_bridge:{{ db_fb_bridge_pswd }}"
+      POSTGRES_MULTIPLE_DATABASES: "nextcloud:{{ nextcloud_db_pswd }},synapse:{{ synapse.db_pswd }}:C,fb_bridge:{{ fb_bridge.db_pswd }}"
     volumes: 
       - "{{ cloud_base_dir }}/db-initialization:/docker-entrypoint-initdb.d"
       - "{{cloud_base_dir}}/database-dump:/dump"

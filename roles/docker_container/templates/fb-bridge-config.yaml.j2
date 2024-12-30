@@ -14,7 +14,7 @@ appservice:
     port: 29319
     database:
         type: postgres
-        uri: postgres://fb_bridge:{{ db_fb_bridge_pswd }}@postgres/fb_bridge?sslmode=disable
+        uri: postgres://fb_bridge:{{ fb_bridge.db_pswd }}@postgres/fb_bridge?sslmode=disable
         max_open_conns: 20
         max_idle_conns: 2
         max_conn_idle_time: null
@@ -26,8 +26,8 @@ appservice:
         avatar: mxc://maunium.net/ygtkteZsXnGJLJHRchUwYWak
     ephemeral_events: true
     async_transactions: false
-    as_token: "{{ lookup('password', '{{ local_credential_store }}/fb_bridge_as_token chars=ascii_letters,digits length=64') }}"
-    hs_token: "{{ lookup('password', '{{ local_credential_store }}/fb_bridge_hs_token chars=ascii_letters,digits length=64') }}"
+    as_token: "{{ fb_bridge.as_token }}"
+    hs_token: "{{ fb_bridge.hs_token }}"
 
 meta:
     mode: facebook
@@ -55,7 +55,7 @@ bridge:
         example.com: https://example.com
     double_puppet_allow_discovery: false
     login_shared_secret_map:
-        {{ cloud_server_fqdn }}: "as_token:{{ lookup('password', '{{ local_credential_store}}/puppet_as_token chars=ascii_letters,digits length=64') }}"
+        {{ cloud_server_fqdn }}: "as_token:{{ synapse.puppet_as_token }}"
     command_prefix: default
     backfill:
         enabled: true

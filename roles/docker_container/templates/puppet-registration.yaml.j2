@@ -1,6 +1,6 @@
 id: doublepuppet
 url:
-as_token: {{ lookup('password', '{{ local_credential_store}}/puppet_as_token chars=ascii_letters,digits length=64') }}
+as_token: {{ synapse.puppet_as_token }}
 hs_token: "unused"
 sender_localpart: "unused"
 rate_limited: false

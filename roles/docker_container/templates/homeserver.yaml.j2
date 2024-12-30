@@ -36,7 +36,7 @@ database:
   args:
     database: "synapse"
     user: "synapse"
-    password: "{{ db_synapse_pswd }}"
+    password: "{{ synapse.db_pswd }}"
     host: postgres
     port: 5432
     cp_min: 5
@@ -49,9 +49,9 @@ turn_uris:
   - "turn:turn.{{ cloud_server_fqdn }}?transport=udp"
   - "turn:turn.{{ cloud_server_fqdn }}?transport=tcp"
 
-turn_shared_secret: "{{ lookup('password', '{{ local_credential_store }}/coturn_secret chars=ascii_letters,digits length=32') | lower }}"
+turn_shared_secret: "{{ coturn_secret }}"
 turn_user_lifetime: 86400000
-registration_shared_secret: "{{ lookup('password', '{{ local_credential_store }}/synapse_registration_secret chars=ascii_letters,digits length=32') }}"
+registration_shared_secret: "{{ synapse.registration_secret }}"
 account_threepid_delegates:
 account_validity:
 metrics_flags:
@@ -62,7 +62,7 @@ app_service_config_files:
   - /data/puppet.yaml
 
 macaroon_secret_key: "{{ macaroon_secret_key }}"
-form_secret: "{{ synapse_form_secret }}"
+form_secret: "{{ synapse.form_secret }}"
 signing_key_path: "/data/{{ cloud_server_fqdn }}.signing.key"
 old_signing_keys:
 trusted_key_servers:
@@ -80,11 +80,11 @@ password_config:
   policy:
 ui_auth:
 email:
-  smtp_host: {{ nextcloud_mail_smtphost }}
-  smtp_port: {{ nextcloud_mail_smtpport }}
-  smtp_user: "{{ nextcloud_mail_smtpname }}"
-  smtp_pass: "{{ nextcloud_mail_smtppwd }}"
-  notif_from: "{{ cloud_name }} Chat <{{ nextcloud_mail_from }}@{{ nextcloud_mail_domain }}>"
+  smtp_host: {{ smtp_host }}
+  smtp_port: {{ smtp_port }}
+  smtp_user: "{{ smtp_user }}"
+  smtp_pass: "{{ smtp_pass }}"
+  notif_from: "{{ cloud_name }} Chat <{{ smtp_from }}>"
   app_name: "{{ cloud_name }} Chat"
   enable_notifs: true
   client_base_url: "https://chat.{{ cloud_server_fqdn }}"

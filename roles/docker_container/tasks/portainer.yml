@@ -1,11 +1,4 @@
 ---
-
-- name: generate admin passwd for portainer
-  set_fact:
-    portainer_passwd: "{{ lookup('password', '{{ local_credential_store }}/portainer_admin_secret chars=ascii_letters,digits length=32') }}"
-  when: portainer_passwd == ''
-
-
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the portainer container"
   docker_container:
     name: portainer

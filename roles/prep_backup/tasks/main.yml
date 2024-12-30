@@ -13,11 +13,6 @@
   include_tasks: install_rclone.yml
   when: ( 'rclone' in restic_repo )
 
-- name: generate restic secret if restic_backup_secret is empty
-  set_fact:
-    restic_backup_secret: "{{ lookup('password', '{{ local_credential_store }}/restic_backup_secret chars=ascii_letters,digits length=32') }}"
-  when: restic_backup_secret == ''
-
 - name: create restic backup directory
   file:
     name: "{{ restic_repo }}"
@@ -31,7 +26,7 @@
   command: "{{ restic_install_path }}/restic init"
   environment:
     RESTIC_REPOSITORY: "{{ restic_repo }}"
-    RESTIC_PASSWORD: "{{ restic_backup_secret }}"
+    RESTIC_PASSWORD: "{{ restic_secret }}"
   # no_log: true
   register: restic_init
   changed_when: "'created restic backend' in restic_init.stdout"
@@ -48,7 +43,7 @@
     mode: "0750"
     force: false
 
-- name: cron nextcloud backup
+- name: cron backup
   cron:
     name: "backup selfhosted"
     day: "{{ restic_backup_day }}"

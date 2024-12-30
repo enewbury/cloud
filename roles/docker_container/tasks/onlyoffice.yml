@@ -1,11 +1,6 @@
 ---
 # tasks file to start onlyoffice container
 
-- name: onlyoffice | generate secret
-  set_fact:
-    onlyoffice_secret: "{{ lookup('password', '{{ local_credential_store }}/onlyoffice_secret chars=ascii_letters,digits length=32') }}"
-  tags: onlyoffice
-
 - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the onlyoffice container"
   docker_container:
     name: "onlyoffice"

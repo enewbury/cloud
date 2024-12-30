@@ -18,6 +18,11 @@ entryPoints:
         - secureHeaders@file
       tls:
         certResolver: letsencrypt
+    transport:
+      respondingTimeouts:
+        readTimeout: 600s
+        idleTimeout: 600s
+        writeTimeout: 600s
 
 providers:
   docker:

@@ -2,9 +2,8 @@
 # defaults file for restic backup
 
 # checkout the latest version of restic. set to x.y.z to get a specific version
-restic_version: "latest"
+restic_version: "0.13.1"
 
-restic_backup_secret: ""
 restic_install_path: "/usr/local/bin"
 
 # use a local directory as a restic repository (not a good idea anyway)

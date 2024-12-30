@@ -18,7 +18,7 @@ def get_subdomains():
     return records['domain_records']
 
 def update_turn_conf(ip):
-    os.system("sed -i 's/^\(external-ip\s*=\s*\).*$/" + ip + "/' {{ cloud_coturn_dir }}/turnserver.conf")
+    os.system("sed -i 's/^\(external-ip\s*=\s*\).*$/external-ip=" + ip + "/' {{ cloud_coturn_dir }}/turnserver.conf")
 
 def update_dns():
     current_ip_address = get_current_ip()
