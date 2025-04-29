@@ -17,9 +17,6 @@ def get_subdomains():
     records = session.get(records_url + '?type=A').json()
     return records['domain_records']
 
-def update_turn_conf(ip):
-    os.system("sed -i 's/^\(external-ip\s*=\s*\).*$/external-ip=" + ip + "/' {{ cloud_coturn_dir }}/turnserver.conf")
-
 def update_dns():
     current_ip_address = get_current_ip()
     subdomains = get_subdomains()
@@ -28,7 +25,6 @@ def update_dns():
         subdomain_record_id = sub_info['id']
         if current_ip_address != subdomain_ip_address:
             response = session.put(f'{records_url}{subdomain_record_id}', json={'data': current_ip_address})
-            update_turn_conf(current_ip_address)
             if response.ok:
                 print(f'Subdomain IP address updated to {current_ip_address}')
             else:

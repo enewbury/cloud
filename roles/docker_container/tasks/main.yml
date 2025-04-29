@@ -45,11 +45,7 @@
     file: nginx.yml
     apply:
       tags: nginx
-
-- name: docker | turnserver
-  include_tasks: turnserver.yml
-  when:
-    - (ansible_architecture == 'x86_64' or ansible_architecture == 'aarch64')
+  tags: nginx
 
 - name: docker | synapse
   include_tasks: synapse.yml
@@ -60,6 +56,7 @@
 
 - name: docker | element
   include_tasks: element.yml
+  tags: element
 
 - name: docker | ntfy
   include_tasks: ntfy.yml

@@ -35,7 +35,6 @@
     - { name: "{{ cloud_nginx_dir }}", user: "root", group: "root" }
     - { name: "{{ cloud_base_dir }}/traefik", user: "root", group: "root" }
     - { name: "{{ cloud_base_dir }}/element", user: "root", group: "root" }
-    - { name: "{{ cloud_base_dir }}/turn", user: "root", group: "root" }
     - {
         name: "{{ cloud_base_dir }}/matrix-registration",
         user: "root",

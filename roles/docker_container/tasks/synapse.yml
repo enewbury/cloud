@@ -5,7 +5,7 @@
     set_fact:
       macaroon_secret_key: "{{ synapse.macaroon_secret_key }}"
 
-  - name: make sure synapse dir exists
+  - name: synapse | amake sure synapse dir exists
     file:
       name: "{{ cloud_base_dir }}/synapse"
       owner: 991
@@ -13,21 +13,21 @@
       mode: 0750
       state: directory
 
-  - name: adding homeserver.yaml file
+  - name: synapse | aadding homeserver.yaml file
     template:
       src: homeserver.yaml.j2
       dest: "{{ cloud_base_dir }}/synapse/homeserver.yaml"
       owner: 991
       group: 991
 
-  - name: adding puppet-bridge registration file
+  - name: synapse | aadding puppet-bridge registration file
     template:
       src: puppet-registration.yaml.j2
       dest: "{{ cloud_base_dir }}/synapse/puppet.yaml"
       owner: 991
       group: 991
 
-  - name: make sure fb-bridge dir exists
+  - name: synapse | amake sure fb-bridge dir exists
     file:
       name: "{{ cloud_base_dir }}/fb-bridge"
       owner: 1337
@@ -35,12 +35,26 @@
       mode: 0755
       state: directory
 
-  - name: adding fb-bridge config file
+  - name: synapse | aadding fb-bridge config file
     template:
       src: fb-bridge-config.yaml.j2
       dest: "{{ cloud_base_dir }}/fb-bridge/config.yaml"
       owner: 1337
       group: 1337
+
+  - name: synapse | ensures livekit config dir exists
+    file:
+      path: "{{ cloud_base_dir }}/livekit"
+      state: directory
+      owner: root
+      group: root
+
+  - name: synapse | adding livekit config file
+    template:
+      src: livekit.yaml.j2
+      dest: "{{ cloud_base_dir }}/livekit/config.yaml"
+      owner: root
+      group: root
 
   - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} fb-bridge container"
     docker_container:
@@ -78,4 +92,47 @@
         - "{{ cloud_base_dir }}/synapse:/data"
         # - "{{ cloud_base_dir }}/fb-bridge/registration.yaml:/data/fb-bridge.yaml"
       state: "{{ state | default('started') }}"
+
+  - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} livekit-jwt container"
+    docker_container:
+      name: livekit-jwt
+      image: ghcr.io/element-hq/lk-jwt-service:latest
+      restart_policy: always
+      env:
+        LIVEKIT_URL: "wss://livekit.{{ cloud_server_fqdn }}"
+        LIVEKIT_KEY: "devkey"
+        LIVEKIT_SECRET: "{{ livekit_secret }}"
+      networks:
+        - name: backend
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.livekitjwt.entrypoints: "web-secure"
+        traefik.http.routers.livekitjwt.rule: "Host(`livekit-jwt.{{ cloud_server_fqdn }}`)"
+        traefik.http.routers.livekitjwt.service: livekitjwt
+        traefik.http.services.livekitjwt.loadbalancer.server.port: "8080"
+        com.centurylinklabs.watchtower.enable: "true"
+      state: "{{ state | default('started') }}"
+
+  - name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} livekit container"
+    docker_container:
+      name: livekit
+      image: livekit/livekit-server:latest 
+      restart_policy: always
+      networks:
+        - name: backend
+      ports:
+        - 7881:7881/tcp
+        - 50100-50200:50100-50200/udp
+      volumes:
+        - "{{ cloud_base_dir }}/livekit/config.yaml:/etc/livekit.yaml:ro"
+      command: "--config /etc/livekit.yaml"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.livekit.entrypoints: "web-secure"
+        traefik.http.routers.livekit.rule: "Host(`livekit.{{ cloud_server_fqdn }}`)"
+        traefik.http.routers.livekit.service: livekit
+        traefik.http.services.livekit.loadbalancer.server.port: "7880"
+        com.centurylinklabs.watchtower.enable: "true"
+      state: "{{ state | default('started') }}"
+
   tags: synapse
