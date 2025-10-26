@@ -35,6 +35,7 @@
 
 - name: docker | nextcloud
   include_tasks: nextcloud.yml
+  tags: nextcloud
 
 - name: docker | onlyoffice
   include_tasks: onlyoffice.yml

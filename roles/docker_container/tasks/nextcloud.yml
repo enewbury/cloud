@@ -38,6 +38,7 @@
       com.centurylinklabs.watchtower.depends-on: "redis,cloud-db"
     state: "{{ state | default('started') }}"
   register: docker_result
+  tags: nextcloud
     
 - name: wait for nextcloud container to come up
   wait_for:
