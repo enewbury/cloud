@@ -46,10 +46,3 @@
     minute: "30"
     hour: "2"
     job: "docker exec -t actual_helpers node sync-banks.js"
-
-- name: cron update inventment balances
-  cron:
-    name: "actual - track investmentws"
-    minute: "40"
-    hour: "2"
-    job: "docker exec -t actual_helpers node track-investments.js"
