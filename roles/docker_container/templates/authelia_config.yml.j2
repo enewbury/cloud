@@ -1,0 +1,51 @@
+# yamllint disable rule:comments-indentation
+---
+theme: 'auto'
+
+identity_validation:
+  reset_password:
+    jwt_secret: '{{ authelia.jwt_secret }}'
+
+authentication_backend:
+  file:
+    path: '/config/users_database.yml'
+
+access_control:
+  default_policy: 'two_factor'
+
+session:
+  cookies:
+    -
+      name: 'authelia_session'
+      domain: '{{ cloud_server_fqdn }}'
+      authelia_url: 'https://auth.{{ cloud_server_fqdn }}'
+
+storage:
+  encryption_key: '{{ authelia.storage_encryption_key }}'
+  local:
+    path: '/config/db.sqlite3'
+
+notifier:
+  smtp:
+    address: 'smtp://{{ smtp_host }}:{{ smtp_port }}'
+    username: '{{ smtp_user }}'
+    password: '{{ smtp_pass }}'
+    sender: '{{cloud_name }} Auth <{{ smtp_from }}>'
+    ## HELO/EHLO Identifier. Some SMTP Servers may reject the default of localhost.
+    # identifier: 'localhost'
+    subject: '[{{ cloud_name }} Auth] {title}'
+
+identity_providers:
+  oidc:
+    jwks:
+      - key: |
+          {{ authelia.jwks_key | indent(width=10) }}
+
+    clients:
+      -
+        client_id: 'actual'
+        client_name: 'Actual Budget'
+        client_secret: '{{ authelia.actual_client_secret }}'  # The digest of 'insecure_secret'.
+        redirect_uris:
+          - 'https://budget.{{ cloud_server_fqdn }}/openid/callback'
+...

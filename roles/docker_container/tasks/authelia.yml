@@ -1,0 +1,32 @@
+---
+- name: authelia | ensures dir exists
+  file:
+    path: "{{ cloud_base_dir }}/authelia"
+    state: directory
+    owner: root
+    group: root
+
+- name: authelia | adding config file
+  template:
+    src: authelia_config.yml.j2
+    dest: "{{ cloud_base_dir }}/authelia/configuration.yml"
+    owner: root
+    group: root
+
+- name: "{{ 'Create' if (state is undefined or 'absent' not in state) else 'Terminate' }} the authelia container"
+  docker_container:
+    name: authelia
+    image: "authelia/authelia:latest"
+    restart_policy: unless-stopped
+    networks:
+      - name: backend
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.authelia.entrypoints: "web-secure"
+      traefik.http.routers.authelia.rule: "Host(`auth.{{ cloud_server_fqdn }}`)"
+      traefik.http.routers.authelia.service: authelia
+      traefik.http.services.authelia.loadbalancer.server.port: "9091"
+      com.centurylinklabs.watchtower.enable: "true"
+    volumes:
+      - "{{ cloud_base_dir }}/authelia:/config"
+    state: "{{ state | default('started') }}"

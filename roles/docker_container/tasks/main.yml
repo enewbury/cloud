@@ -37,10 +37,6 @@
   include_tasks: nextcloud.yml
   tags: nextcloud
 
-- name: docker | onlyoffice
-  include_tasks: onlyoffice.yml
-  tags: onlyoffice
-
 - name: docker | nginx
   include_tasks: 
     file: nginx.yml
@@ -76,3 +72,10 @@
     apply:
       tags: actual
   tags: actual
+
+- name: docker | authelia 
+  include_tasks:
+    file: authelia.yml
+    apply:
+      tags: authelia
+  tags: authelia
